@@ -1,0 +1,12 @@
+{
+    "NODE_ENV": "development",
+    "HOST": "localhost",
+    "PORT": 3030,
+    "DB_HOST": "localhost",
+    "DB_USER": "root",
+    "DB_PASSWORD": "qwerty",
+    "DB_NAME": "db_name",
+    "APP_SECRET": "db59ef9c1fef7fb491b4a1ddd5f48faf90509897e6e0527c2075bf9988cd170f920b23c2f08d8ad54c1a2a814fb207a8d869ee43dacba102f6130288bad06f8a",
+    "ACCESS_TOKEN_EXPIRATION": "5m",
+    "REFRESH_TOKEN_EXPIRATION": "60d"
+}
