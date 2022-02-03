@@ -5,6 +5,11 @@ class BusinessRouter {
     readonly router = express.Router();
 
     constructor() {
+        this.router.get(
+            "/business/:id",
+            businessController.getBusinessAccountById
+        );
+
         this.router.post("/", businessController.createBusinessAccount);
         this.router.post(
             "/business/transfer/:sourceId/business/:destinationId",
