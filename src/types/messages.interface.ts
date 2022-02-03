@@ -8,7 +8,7 @@ export interface ErrorMessage extends BaseMessage {
 }
 
 export interface ResponseMessage extends BaseMessage {
-    data: {
+    data?: {
         [key: string]: any;
     };
 }
