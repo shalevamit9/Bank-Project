@@ -1,6 +1,8 @@
 import express, { Application } from "express";
 import log from "@ajar/marker";
 import config from "./config/config.js";
+import businessRouter from "./modules/business/business.router.js";
+import connectDb from "./db/mysql.connection.js";
 
 const { HOST, PORT } = config;
 
@@ -13,7 +15,7 @@ class App {
         this.app = express();
 
         this.initializeMiddlewares();
-        // this.initializeRoutes();
+        this.initializeRoutes();
         // this.initializeErrorMiddlewares();
     }
 
@@ -22,7 +24,8 @@ class App {
     }
 
     private initializeRoutes() {
-        throw new Error("Method not implemented.");
+        const { API_PATH } = App;
+        this.app.use(`${API_PATH}/business`, businessRouter.router);
     }
 
     private initializeErrorMiddlewares() {
@@ -30,7 +33,8 @@ class App {
     }
 
     async start() {
-        this.app.listen(PORT, HOST, () => {
+        await connectDb();
+        this.app.listen(Number(PORT), HOST, () => {
             log.magenta(
                 "api is live on",
                 ` ✨ ⚡  http://${HOST}:${PORT} ✨ ⚡`
