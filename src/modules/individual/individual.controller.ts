@@ -2,15 +2,15 @@
 import { Request, Response, RequestHandler } from "express";
 import { ResponseMessage } from "../../types/messages.interface";
 import individualService from "./individual.service";
-import raw from "../../middleware/route.async.wrapper";
-
-
+import raw from "../../middlewares/route.async.wrapper";
 
 class IndividualController {
-    createIndividual : RequestHandler = raw(
-            async (req : Request, res : Response) => {
-            const individual = await individualService.createIndividual(req.body);
-            const response : ResponseMessage = {
+    createIndividual: RequestHandler = raw(
+        async (req: Request, res: Response) => {
+            const individual = await individualService.createIndividual(
+                req.body
+            );
+            const response: ResponseMessage = {
                 status: 201,
                 message: "success",
                 data: { individual },
@@ -19,10 +19,11 @@ class IndividualController {
         }
     );
 
-    getIndividual : RequestHandler = raw(
-        async (req : Request, res : Response) => {
-        const individual = await individualService.getIndividual(Number(req.params.id));
-        const response : ResponseMessage = {
+    getIndividual: RequestHandler = raw(async (req: Request, res: Response) => {
+        const individual = await individualService.getIndividual(
+            Number(req.params.id)
+        );
+        const response: ResponseMessage = {
             status: 200,
             message: "success",
             data: { individual },
@@ -34,4 +35,3 @@ class IndividualController {
 const individualController = new IndividualController();
 
 export default individualController;
-
