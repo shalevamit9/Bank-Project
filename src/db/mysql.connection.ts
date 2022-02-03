@@ -3,18 +3,18 @@ import config from "../config/config.js";
 
 const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME } = config;
 
-let connection: mysql.Connection;
+// eslint-disable-next-line import/no-mutable-exports
+export let db: mysql.Connection;
 
-export default async function getDbConnection() {
-    if (connection) return connection;
+// eslint-disable-next-line consistent-return
+export default async function connectDb() {
+    if (db) return db;
 
-    connection = await mysql.createConnection({
+    db = await mysql.createConnection({
         host: DB_HOST,
         port: Number(DB_PORT),
         user: DB_USERNAME,
         password: DB_PASSWORD,
         database: DB_NAME,
     });
-
-    return connection;
 }
