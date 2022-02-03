@@ -3,10 +3,9 @@ import config from "../config/config.js";
 
 const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME } = config;
 
-// eslint-disable-next-line import/no-mutable-exports
 export let db: mysql.Connection;
 
-// eslint-disable-next-line consistent-return
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default async function connectDb() {
     if (db) return db;
 
