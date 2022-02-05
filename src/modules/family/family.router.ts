@@ -8,12 +8,7 @@ class FamilyRouter {
 
     constructor() {
         this.router = express.Router();
-        this.initMiddlewares();
         this.initRoutingFuncs();
-    }
-
-    private initMiddlewares() {
-        this.router.use(express.json());
     }
 
     private initRoutingFuncs() {

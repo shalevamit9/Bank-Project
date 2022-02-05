@@ -1,9 +1,9 @@
-export interface IFamilyAccount {
-    id: number;
-    currency: string;  //  USD, ILS
-    balance: number;
-    status: string;  // Active / Inactive
-    // individualAccounts: number[];  // array of primary IDs of the family members accounts
+import { IAccount } from "../../types/accounts.interface.js";
+import { IIndividualAccount } from "../individual/individual.interface.js";
+
+export interface IFamilyAccount extends IAccount {
+    context: string; // (travel / morgage / emergency / savings / checking) 
+    owners: IIndividualAccount[]; //  ( collection of IndividualAccount models )
 }
 
-export type ICreateFamily = Omit<IFamilyAccount, "id">;
+export type ICreateFamily = Omit<IFamilyAccount, "account_id">;
