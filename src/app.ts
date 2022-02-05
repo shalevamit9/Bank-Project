@@ -10,6 +10,8 @@ import {
     urlNotFound,
 } from "./middlewares/errors.handler.js";
 import path from "path";
+import { attachRequestId } from "./middlewares/attachRequestId.middleware.js";
+import { logger } from "./middlewares/logger.middleware.js";
 
 const { HOST, PORT } = config;
 
@@ -19,6 +21,11 @@ class App {
         process.cwd(),
         "logs",
         "errors.log"
+    );
+    static readonly REQUESTS_LOG_PATH = path.join(
+        process.cwd(),
+        "logs",
+        "requests.log"
     );
 
     private readonly app: Application;
@@ -32,6 +39,9 @@ class App {
     }
 
     private initializeMiddlewares() {
+        this.app.use(attachRequestId);
+        this.app.use(logger(App.REQUESTS_LOG_PATH));
+        this.app.use(express.urlencoded());
         this.app.use(express.json());
     }
 
