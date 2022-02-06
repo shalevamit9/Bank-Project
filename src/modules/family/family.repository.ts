@@ -1,9 +1,9 @@
 /* eslint-disable class-methods-use-this */
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { db } from "../../db/mysql.connection.js";
-import { IBusinessAccount, ICreateBusinessDto } from "./business.interface.js";
+import { IFamilyAccount, ICreateFamily } from "./family.interface.js";
 
-class BusinessRepository {
+class FamilyRepository {
     async getBusinessById(primaryId: number) {
         const [accounts] = (await db.query(
             "SELECT * FROM business_accounts WHERE id = ?",
@@ -40,6 +40,6 @@ class BusinessRepository {
     }
 }
 
-const artistRepository = new BusinessRepository();
+const artistRepository = new FamilyRepository();
 
 export default artistRepository;

@@ -5,17 +5,19 @@ class BusinessRouter {
     readonly router = express.Router();
 
     constructor() {
+        this.router.get("/:id", businessController.getBusinessAccountById);
+
         this.router.post("/", businessController.createBusinessAccount);
         this.router.post(
-            "/business/transfer/:sourceId/business/:destinationId",
+            "/transfer/:source_id/business/:destination_id",
             businessController.transferBusinessToBusiness
         );
         this.router.post(
-            "/business/transfer/:sourceId/individual/:destinationId",
+            "/transfer/:source_id/individual/:destination_id",
             businessController.transferBusinessToIndividual
         );
         this.router.post(
-            "/business/FXtransfer/:sourceId/business/:destinationId",
+            "/FXtransfer/:source_id/business/:destination_id",
             businessController.fxTransferBusinessToBusiness
         );
     }

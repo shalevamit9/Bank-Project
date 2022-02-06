@@ -1,20 +1,49 @@
 {
   "root": true,
+  "env": {
+      "node": true,
+      "es2020": true
+  },
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:@typescript-eslint/recommended-requiring-type-checking"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "./tsconfig.eslint.json"
+      "ecmaVersion": 11,
+      "sourceType": "module",
+      "tsconfigRootDir": ".",
+      "project": ["./tsconfig.json"]
   },
-  "plugins": [
-    "import",
-    "prettier"
-  ],
-  "extends": [
-    "airbnb-base",
-    "airbnb-typescript/base",
-    "prettier"
-  ],
+  "plugins": ["@typescript-eslint"],
   "rules": {
-    "semi": ["error", "always"],
-    "quotes": ["error", "double"]
+      "no-invalid-this": 2,
+      "@typescript-eslint/no-unsafe-return": 1,
+      "@typescript-eslint/explicit-module-boundary-types": 2,
+      "@typescript-eslint/no-unused-vars": 2,
+      "@typescript-eslint/no-unsafe-call": 1,
+      "no-var": 2,
+      "no-useless-catch": 1,
+      "@typescript-eslint/no-empty-interface": 1,
+      "@typescript-eslint/no-unsafe-member-access": 1,
+      "@typescript-eslint/restrict-template-expressions": 1,
+      "no-extra-boolean-cast": 1,
+      "no-empty": 1,
+      "@typescript-eslint/prefer-regexp-exec": 1,
+      "@typescript-eslint/no-array-constructor": 1,
+      "@typescript-eslint/no-for-in-array": 1,
+      "@typescript-eslint/no-floating-promises": 1,
+      "no-case-declarations": 1,
+      "@typescript-eslint/await-thenable": 1,
+      "no-prototype-builtins": 1,
+      "@typescript-eslint/require-await": 1,
+      "@typescript-eslint/no-empty-function": 1,
+      "@typescript-eslint/restrict-plus-operands": 1,
+      "no-useless-escape": 1,
+      "@typescript-eslint/no-explicit-any": 0,
+      "@typescript-eslint/no-inferrable-types": 0,
+      "prefer-const": 0,
+      "no-undef": 0,
+      "@typescript-eslint/ban-ts-comment": 0,
+      "@typescript-eslint/no-var-requires": 0,
+      "@typescript-eslint/ban-types": 0,
+      "@typescript-eslint/no-unsafe-assignment": 0
   }
 }

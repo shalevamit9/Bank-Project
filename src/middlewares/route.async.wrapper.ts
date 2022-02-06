@@ -1,11 +1,9 @@
-/* eslint-disable func-names */
-/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/await-thenable */
 import { RequestHandler } from "express";
 
-
-export default function raw(func: RequestHandler) : RequestHandler {
+export default function (func: RequestHandler): RequestHandler {
     return async function (req, res, next) {
-        try{
+        try {
             await func(req, res, next);
         } catch (err) {
             next(err);

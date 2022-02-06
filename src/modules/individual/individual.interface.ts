@@ -1,13 +1,11 @@
-export interface IIndividualAccount {
-    id: number;
-    currency: number;
-    individual_id: string;
+import { IAccount, IAddress } from "../../types/accounts.interface.js";
+
+export interface IIndividualAccount extends IAccount {
+    individual_id: number;
     first_name: string;
     last_name: string;
-    address: string;
-    balance: number;
-    family_id: number | null;
-    status: number;
+    email: string;
+    address: IAddress;
 }
 
 export type ICreateIndividualDto = Omit<IIndividualAccount, "id">;
