@@ -1,5 +1,6 @@
 import express from "express";
-import individualController from "./individual.controller";
+import individualController from "./individual.controller.js";
+import raw from "../../middlewares/route.async.wrapper.js";
 
 
 
@@ -8,9 +9,9 @@ class IndividualRouter {
 
   constructor() {
       
-      this.router.post("/individual", individualController.createIndividual);
+      this.router.post("/", raw(individualController.createIndividual));
   
-      this.router.get("/individual/:id", individualController.getIndividual);
+      this.router.get("/:id", raw(individualController.getIndividual));
   }
 }
 

@@ -1,10 +1,10 @@
 /* eslint-disable class-methods-use-this */
-import individualRepository from "./individual.repository";
-
+import individualRepository from "./individual.repository.js";
+import { ICreateIndividualDto } from "./individual.interface.js";
 
 
 class IndividualService {
-  createIndividual = async (payload : any) => {
+  createIndividual = async (payload : ICreateIndividualDto) => {
   const individual = await individualRepository.createIndividual(payload);
   return individual;
   };
