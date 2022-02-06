@@ -27,6 +27,6 @@ export class Validator {
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     isNumeric(value: any): boolean {
-        return typeof value === "number";
+        return /^[0-9]+$/.test(String(value));
     }
 }
