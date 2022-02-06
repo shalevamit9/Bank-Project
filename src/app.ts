@@ -3,11 +3,30 @@ import log from "@ajar/marker";
 import config from "./config/config.js";
 import businessRouter from "./modules/business/business.router.js";
 import connectDb from "./db/mysql.connection.js";
+import {
+    errorLogger,
+    errorResponse,
+    printError,
+    urlNotFound,
+} from "./middlewares/errors.handler.js";
+import path from "path";
+import { attachRequestId } from "./middlewares/attachRequestId.middleware.js";
+import { logger } from "./middlewares/logger.middleware.js";
 
 const { HOST, PORT } = config;
 
 class App {
     static readonly API_PATH = "/api";
+    static readonly ERRORS_LOG_PATH = path.join(
+        process.cwd(),
+        "logs",
+        "errors.log"
+    );
+    static readonly REQUESTS_LOG_PATH = path.join(
+        process.cwd(),
+        "logs",
+        "requests.log"
+    );
 
     private readonly app: Application;
 
@@ -16,10 +35,13 @@ class App {
 
         this.initializeMiddlewares();
         this.initializeRoutes();
-        // this.initializeErrorMiddlewares();
+        this.initializeErrorMiddlewares();
     }
 
     private initializeMiddlewares() {
+        this.app.use(attachRequestId);
+        this.app.use(logger(App.REQUESTS_LOG_PATH));
+        this.app.use(express.urlencoded());
         this.app.use(express.json());
     }
 
@@ -29,7 +51,10 @@ class App {
     }
 
     private initializeErrorMiddlewares() {
-        throw new Error("Method not implemented.");
+        this.app.use(urlNotFound);
+        this.app.use(printError);
+        this.app.use(errorLogger(App.ERRORS_LOG_PATH));
+        this.app.use(errorResponse);
     }
 
     async start() {

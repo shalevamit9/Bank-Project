@@ -54,6 +54,7 @@ class FamilyController {
         const individual_account_ids = req.body;
         const family = await familyService.addFamilyMembers(Number(req.params.id), individual_account_ids);
 
+        
         if(family) {
             const response: ResponseMessage = {
                 status: 200,
