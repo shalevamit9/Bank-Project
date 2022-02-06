@@ -1,8 +1,5 @@
-import { resourceLimits } from "worker_threads";
 import { IBalanceTransfer,
-    AccountTypes,
     IAccount,
-    AccountStatuses,
 } from "../types/accounts.interface.js";
 
 class Validator {
