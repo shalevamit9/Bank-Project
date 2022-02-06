@@ -27,3 +27,5 @@ export interface IAddress {
     street_name: string;
     street_number: number;
 }
+
+export type IBalanceTransfer = [balance:number, amount:number]
