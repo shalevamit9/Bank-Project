@@ -1,45 +1,53 @@
 /* eslint-disable class-methods-use-this */
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { db } from "../../db/mysql.connection.js";
+import { IIndividualAccount } from "../individual/individual.interface.js";
 import { IFamilyAccount, ICreateFamily } from "./family.interface.js";
 
 class FamilyRepository {
-    async getBusinessById(primaryId: number) {
+    async getFamilyById(primary_id: number) {
         const [accounts] = (await db.query(
-            "SELECT * FROM business_accounts WHERE id = ?",
-            primaryId
+            "SELECT * FROM family_accounts WHERE id = ?",
+            primary_id
         )) as RowDataPacket[][];
 
-        return accounts[0] as IBusinessAccount;
+        return accounts[0] as IFamilyAccount;
     }
 
-    async createBusinessAccount(artistDto: ICreateBusinessDto) {
+    async createFamilyAccount(family_data: ICreateFamily) {
         const [result] = (await db.query(
-            "INSERT INTO artists SET ?",
-            artistDto
+            "INSERT INTO family_accounts SET ?",
+            family_data
         )) as ResultSetHeader[];
-        const business = await this.getBusinessById(result.insertId);
+        const family = await this.getFamilyById(result.insertId);
 
-        return business;
+        return family;
     }
 
-    async transferBusinessToBusiness(
-        sourceId: string,
-        destinationId: string,
+    async transferFamilyToBusiness(
+        source_id: number,
+        destination_id: number,
         amount: number
     ) {
         throw new Error("Method not implemented.");
     }
+    // is it enough to get only the IDs ?
+    async isInFamily(family_id: number, individual_account_ids: number[]) {
+        const family = await this.getFamilyById(family_id);
 
-    async transferBusinessToIndividual(
-        sourceId: string,
-        destinationId: string,
-        amount: number
-    ) {
-        throw new Error("Method not implemented.");
+        const owners_ids = family.owners.map((owner) => owner.account_id);
+
+        for (const individual_account_id of individual_account_ids) {
+            if (!owners_ids.includes(individual_account_id)) {
+                return false;
+                // throw new Error(`account ${individual_account_id} doesn't belong to this family account`);
+            }
+        }
+
+        return true;
     }
 }
 
-const artistRepository = new FamilyRepository();
+const familyRepository = new FamilyRepository();
 
-export default artistRepository;
+export default familyRepository;
