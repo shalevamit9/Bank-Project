@@ -1,7 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { db } from "../../db/mysql.connection.js";
-import { IIndividualAccount } from "../individual/individual.interface.js";
 import { IFamilyAccount, ICreateFamily } from "./family.interface.js";
 
 class FamilyRepository {

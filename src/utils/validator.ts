@@ -1,12 +1,6 @@
 class Validator {
-    isKeyExist(key_to_find: string, obj: Object): boolean {
-        for (const key in obj) {
-            if (key_to_find === key) {
-                return true;
-            }
-        }
-
-        return false;
+    required(obj: Object, mandatory_keys: string[]) {
+        return mandatory_keys.every((key) => key in obj);
     }
 
     isPositive(num: number): boolean {
@@ -31,4 +25,5 @@ class Validator {
 }
 
 const validator = new Validator();
+
 export default validator;
