@@ -1,10 +1,20 @@
+export enum AccountTypes {
+    Individual = "Individual",
+    Business = "Business",
+    Family = "Family",
+}
+
+export enum AccountStatuses {
+    Active = "Active",
+    Inactive = "Inactive",
+}
+
 export interface IAccount {
     account_id: number; // (primary ID)
     currency: string;
     balance: number;
-    address: IAddress; // (Address Model)
-    type: "individual" | "business" | "family";
-    status: "active" | "inactive";
+    type: AccountTypes; // "individual" | "business" | "family";
+    status: AccountStatuses; // "active" | "inactive";
 }
 
 export interface IAddress {

@@ -1,10 +1,10 @@
-export interface IBusinessAccount {
-    id: number;
-    currency: number;
+import { IAccount, IAddress } from "../../types/accounts.interface.js";
+
+export interface IBusinessAccount extends IAccount {
+    company_id: number;
     company_name: string;
-    company_id: string;
-    balance: number;
-    status: number;
+    context: string;
+    address: IAddress;
 }
 
 export type ICreateBusinessDto = Omit<IBusinessAccount, "id">;
