@@ -10,7 +10,7 @@ class FamilyController {
         const family: IFamilyAccount = await familyService.createFamilyAccount(family_data);
 
         const response_data = {
-            primaryId: family.id,
+            primaryId: family.account_id,
             currency: family.currency,
             balance: family.balance
         };
@@ -24,22 +24,9 @@ class FamilyController {
         res.status(response.status).json(response);
     };
 
-    // return the family model and owner id's
-    getShortFamilyDetails: RequestHandler = async (req, res) => {
-        const family_details = await familyService.getShortFamilyDetails(Number(req.params.id));
-
-        const response: ResponseMessage = {
-            status: 200,
-            message: "success",
-            data: { familyDetails: family_details },
-        };
-
-        res.status(response.status).json(response);
-    };
-
-    // return the family model and full owners data
-    getFullFamilyDetails: RequestHandler = async (req, res) => {
-        const family_details = await familyService.getFullFamilyDetails(Number(req.params.id));
+    // return the family model and owner id's OR full owners data
+    getFamilyDetails: RequestHandler = async (req, res) => {
+        const family_details = await familyService.getFamilyDetails(Number(req.params.id));
 
         const response: ResponseMessage = {
             status: 200,
@@ -51,10 +38,11 @@ class FamilyController {
     };
 
     addFamilyMembers: RequestHandler = async (req, res) => {
-        const individual_account_ids = req.body;
+        // accepts as input: return short or full details
+
+        const individual_account_ids = req.body;  // tuples [primaryID, amount]
         const family = await familyService.addFamilyMembers(Number(req.params.id), individual_account_ids);
 
-        
         if(family) {
             const response: ResponseMessage = {
                 status: 200,
@@ -72,7 +60,7 @@ class FamilyController {
     };
 
     removeFamilyMembers: RequestHandler = async (req, res) => {
-        const individual_account_ids = req.body;
+        const individual_account_ids = req.body;  // list of tuples [primaryID, amount to take from the family account]
         const family = await familyService.removeFamilyMembers(Number(req.params.id), individual_account_ids);
 
         if (family) {
