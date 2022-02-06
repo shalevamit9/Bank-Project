@@ -1,4 +1,4 @@
-export class Validator {
+class Validator {
     isKeyExist(key_to_find: string, obj: Object): boolean {
         for (const key in obj) {
             if (key_to_find === key) {
@@ -25,8 +25,10 @@ export class Validator {
         return num >= threshold;
     }
 
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    isNumeric(value: any): boolean {
+    isNumeric(value: unknown): boolean {
         return /^[0-9]+$/.test(String(value));
     }
 }
+
+const validator = new Validator();
+export default validator;
