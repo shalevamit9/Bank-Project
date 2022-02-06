@@ -6,11 +6,7 @@ class FamilyService {
         throw new Error("Method not implemented." + family_data.toString());
     }
 
-    getShortFamilyDetails(id: number) {
-        throw new Error("Method not implemented." + id.toString());
-    }
-
-    getFullFamilyDetails(id: number) {
+    getFamilyDetails(id: number) {
         throw new Error("Method not implemented." + id.toString());
     }
 
@@ -28,6 +24,11 @@ class FamilyService {
 
     transferToBusiness(source_id: number, destination_id: number, transfer_data: any) {
         throw new Error("Method not implemented." + source_id.toString() + destination_id.toString() + transfer_data);
+        /*
+         * the amount to transfer is reduced from the balance of the family account!
+         * (each family member puts money in the family account when he joins)
+         */
+    
     }
 
 }
