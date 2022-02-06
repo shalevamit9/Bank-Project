@@ -5,8 +5,8 @@ export enum AccountTypes {
 }
 
 export enum AccountStatuses {
-    Active = "Active",
-    Inactive = "Inactive",
+    Inactive = 0,
+    Active = 1,
 }
 
 export interface IAccount {
