@@ -1,7 +1,12 @@
-/* eslint-disable @typescript-eslint/await-thenable */
-import { RequestHandler } from "express";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 
-export default function (func: RequestHandler): RequestHandler {
+type AsyncRequestHandler = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => Promise<RequestHandler>;
+
+export default function (func: AsyncRequestHandler): RequestHandler {
     return async function (req, res, next) {
         try {
             await func(req, res, next);
