@@ -1,6 +1,6 @@
 import { IAccount, IAddress } from "../../types/accounts.interface.js";
 
-export interface IIndividualAccount extends IAccount {
+export interface IIndividualAccountDto extends IAccount {
     individual_id: number;
     first_name: string;
     last_name: string;
@@ -8,5 +8,5 @@ export interface IIndividualAccount extends IAccount {
     address: IAddress;
 }
 
-export type ICreateIndividualDto = Omit<IIndividualAccount, "id">;
+export type ICreateIndividualDto = Omit<IIndividualAccountDto, "id">;
 export type IUpdateIndividualDto = Partial<ICreateIndividualDto>;
