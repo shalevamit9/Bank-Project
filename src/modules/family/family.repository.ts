@@ -45,6 +45,26 @@ class FamilyRepository {
 
         return true;
     }
+
+    addIndividualsToFamily = async (individuals_id : number[], family_id : number) => {
+        let query = `INSERT INTO family_individuals (individual_account_id,family_account_id) VALUES `;
+        const valuesStr = '(?,?),';
+        individuals_id.forEach(()=> query += valuesStr);
+        query.substring(0,query.length-1);
+        await db.query(query, individuals_id.map(id=> [id,family_id]));
+        const family = await this.getFamily(family_id);
+        return family;
+    };
+
+    removeIndividualsFromFamily = async (individuals_id : number[], family_id : number) => {
+        let query = `DELETE FROM family_individuals WHERE `;
+        const valueStr = `individual_account_id = ? and family_account_id = ? OR`;
+        individuals_id.forEach(()=> query += valueStr);
+        query.substring(0,query.length-3);
+        await db.query(query, individuals_id.map(id=> [id,family_id]));
+        const family = await this.getFamily(family_id);
+        return family;
+    };
 }
 
 const familyRepository = new FamilyRepository();

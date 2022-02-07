@@ -26,20 +26,6 @@ class IndividualRepository {
         const individual = await this.getIndividual(id);
         return individual;
     };
-
-    addIndividualToFamily = async (individual_id : number, family_id : number) => {
-        const query = "INSERT INTO family_individuals SET ?";
-        await db.query(query, {individual_account_id:individual_id, family_account_id:family_id});
-        const individual = await this.getIndividual(individual_id);
-        return individual;
-    };
-
-    removeIndividualFromFamily = async (individual_id : number, family_id : number) => {
-        const query = "DELETE FROM family_individuals WHERE individual_account_id = ? and family_account_id = ?";
-        await db.query(query, [individual_id, family_id]);
-        const individual = await this.getIndividual(individual_id);
-        return individual;
-    };
 }
 
 const individualRepository = new IndividualRepository();
