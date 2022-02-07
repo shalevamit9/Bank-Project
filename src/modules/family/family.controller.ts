@@ -1,18 +1,23 @@
 /* eslint-disable class-methods-use-this */
 import { RequestHandler } from "express";
-import { ErrorMessage, ResponseMessage } from "../../types/messages.interface.js";
+import {
+    ErrorMessage,
+    ResponseMessage,
+} from "../../types/messages.interface.js";
 import { ICreateFamily, IFamilyAccount } from "./family.interface.js";
 import familyService from "./family.service.js";
 
 class FamilyController {
     createFamilyAccount: RequestHandler = async (req, res) => {
         const family_data: ICreateFamily = req.body;
-        const family: IFamilyAccount = await familyService.createFamilyAccount(family_data);
+        const family: IFamilyAccount = await familyService.createFamilyAccount(
+            family_data
+        );
 
         const response_data = {
             primaryId: family.account_id,
             currency: family.currency,
-            balance: family.balance
+            balance: family.balance,
         };
 
         const response: ResponseMessage = {
@@ -24,14 +29,18 @@ class FamilyController {
         res.status(response.status).json(response);
     };
 
-    // return the family model and owner id's OR full owners data
+    //  /api/family/:id?details=full
     getFamilyDetails: RequestHandler = async (req, res) => {
-        const family_details = await familyService.getFamilyDetails(Number(req.params.id));
+        const details_level = String(req.query.details) || "full";
+        const family = await familyService.getFamilyDetails(
+            Number(req.params.id),
+            details_level
+        );
 
         const response: ResponseMessage = {
             status: 200,
             message: "success",
-            data: { familyDetails: family_details },
+            data: { family },
         };
 
         res.status(response.status).json(response);
@@ -40,10 +49,13 @@ class FamilyController {
     addFamilyMembers: RequestHandler = async (req, res) => {
         // accepts as input: return short or full details
 
-        const individual_account_ids = req.body;  // tuples [primaryID, amount]
-        const family = await familyService.addFamilyMembers(Number(req.params.id), individual_account_ids);
+        const individual_account_ids = req.body; // tuples [primaryID, amount]
+        const family = await familyService.addFamilyMembers(
+            Number(req.params.id),
+            individual_account_ids
+        );
 
-        if(family) {
+        if (family) {
             const response: ResponseMessage = {
                 status: 200,
                 message: "success",
@@ -60,8 +72,11 @@ class FamilyController {
     };
 
     removeFamilyMembers: RequestHandler = async (req, res) => {
-        const individual_account_ids = req.body;  // list of tuples [primaryID, amount to take from the family account]
-        const family = await familyService.removeFamilyMembers(Number(req.params.id), individual_account_ids);
+        const individual_account_ids = req.body; // list of tuples [primaryID, amount to take from the family account]
+        const family = await familyService.removeFamilyMembers(
+            Number(req.params.id),
+            individual_account_ids
+        );
 
         if (family) {
             const response: ResponseMessage = {
@@ -99,18 +114,20 @@ class FamilyController {
 
     transferToBusiness: RequestHandler = async (req, res) => {
         const transfer_data = req.body;
-        const result = await familyService.transferToBusiness(Number(req.params.sourceId), Number(req.params.destinationId), transfer_data);
+        const result = await familyService.transferToBusiness(
+            Number(req.params.sourceId),
+            Number(req.params.destinationId),
+            transfer_data
+        );
 
         const response: ResponseMessage = {
             status: 200,
             message: "success",
-            data: { result }
+            data: { result },
         };
         res.status(response.status).json(response);
-        
     };
 }
-
 
 const family_controller = new FamilyController();
 

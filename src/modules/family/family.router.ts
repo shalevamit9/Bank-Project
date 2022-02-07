@@ -16,13 +16,7 @@ class FamilyRouter {
         // create a family account
         this.router.post("/", raw(familyController.createFamilyAccount)); // input: a list of accout primaryID values, currency
 
-        // transfer from a family account to a business account having the same currency
-        this.router.post(
-            "/transfer/:sourceId/business/:destinationId",
-            raw(familyController.transferToBusiness)
-        ); // input: srcId, destId, a list of tuples (individual account ID, amount), amount to transfer
 
-        // get family account details (short or full)
         this.router.get("/:id", raw(familyController.getFamilyDetails)); // input: the family account primaryID, "short"/"full" details level --> in query string
 
         // add individual accounts to the family account
@@ -39,6 +33,13 @@ class FamilyRouter {
 
         // close family account --> delete or patch?
         this.router.patch("/:id", raw(familyController.closeAccount));
+
+        // transfer from a family account to a business account having the same currency
+        this.router.post(
+            "/transfer/:sourceId/business/:destinationId",
+            raw(familyController.transferToBusiness)
+        ); // input: srcId, destId, a list of tuples (individual account ID, amount), amount to transfer
+
     }
 }
 
