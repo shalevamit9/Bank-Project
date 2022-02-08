@@ -16,6 +16,7 @@ class FamilyValidator {
     createFamily: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const family_dto : IFamilyCreate= req.body;
         validator.required(family_dto, ["owners","currency"]);
+        validator.notExist(family_dto, ["family_account_id"]);
         const pending_users : Promise<IIndividualAccountDto>[] = family_dto.owners.map(async owner => await individualService.getIndividualById(Number(owner[0])));
         const users : IIndividualAccountDto[] = await Promise.all(pending_users);
         validator.isExist(users,family_dto.owners.length)

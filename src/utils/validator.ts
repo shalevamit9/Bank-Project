@@ -15,6 +15,15 @@ class Validator {
         });
     }
 
+    notExist(obj: IDynamicObject, mandatory_keys: string[]) {
+        return mandatory_keys.every((key) => {
+            if((key in obj)){
+                throw new BadRequest(`the request is missing ${key} value`);
+            }
+            return true;
+        });
+    }
+
     isPositive(num: number) {
         if(num > 0) {
             return true;
