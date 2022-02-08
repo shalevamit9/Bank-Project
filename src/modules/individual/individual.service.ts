@@ -13,6 +13,7 @@ class IndividualService {
         return individual;
     };
 
+<<<<<<< HEAD
     getIndividuals = async (individual_ids: number[]) => {
         const individuals = await individualRepository.getIndividuals(
             individual_ids
@@ -29,6 +30,13 @@ class IndividualService {
     //   const individual = await individualRepository.updateIndividualByID(individual_id, {family_id : null});
     //   return individual;
     // };
+=======
+  getIndividualById = async (id : number) => {
+    const individual = await individualRepository.getIndividual(id);
+    return individual;
+  };
+
+>>>>>>> origin/validation
 }
 
 const individualService = new IndividualService();

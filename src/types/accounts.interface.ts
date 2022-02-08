@@ -29,3 +29,4 @@ export interface IAddress {
 }
 
 export type BalanceTransfer = [balance: number, amount: number];
+export type amountTransfer = [primary_id: number, amount: number];
