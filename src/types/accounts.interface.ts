@@ -5,16 +5,16 @@ export enum AccountTypes {
 }
 
 export enum AccountStatuses {
-    Active = "Active",
-    Inactive = "Inactive",
+    Inactive = 0,
+    Active = 1,
 }
 
 export interface IAccount {
-    account_id: number; // (primary ID)
+    account_id: number;
     currency: string;
     balance: number;
-    type: AccountTypes; // "individual" | "business" | "family";
-    status: AccountStatuses; // "active" | "inactive";
+    type: AccountTypes; // "Individual" | "Business" | "Family";
+    status: AccountStatuses; // 0 | 1;
 }
 
 export interface IAddress {
@@ -27,3 +27,6 @@ export interface IAddress {
     street_name: string;
     street_number: number;
 }
+
+export type BalanceTransfer = [balance: number, amount: number];
+export type amountTransfer = [primary_id: number, amount: number]; // FamilyMemberContiburion

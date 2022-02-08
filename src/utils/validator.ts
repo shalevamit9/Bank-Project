@@ -1,26 +1,100 @@
+import { BadRequest } from "../exceptions/badRequest.exception.js";
+import { BalanceTransfer, IAccount } from "../types/accounts.interface.js";
+
+interface IDynamicObject {
+    [key: string]: any;
+}
+
 class Validator {
-    required(obj: Object, mandatory_keys: string[]) {
-        return mandatory_keys.every((key) => key in obj);
+    required(obj: IDynamicObject, mandatory_keys: string[]) {
+        return mandatory_keys.every((key) => {
+            if (!(key in obj)) {
+                throw new BadRequest(`the request is missing ${key} value`);
+            }
+            return true;
+        });
     }
 
-    isPositive(num: number): boolean {
-        return num >= 0;
+    notExist(obj: IDynamicObject, mandatory_keys: string[]) {
+        return mandatory_keys.every((key) => {
+            if (key in obj) {
+                throw new BadRequest(`the request is missing ${key} value`);
+            }
+            return true;
+        });
     }
 
-    isEmpty(arr: any[]): boolean {
-        return arr.length === 0;
+    isPositive(num: number) {
+        if (num > 0) {
+            return true;
+        }
+        throw new BadRequest(`value is not positive`);
     }
 
-    isLessThan(limit: number, num: number): boolean {
-        return num < limit;
+    isEmpty(arr: any[]) {
+        if (arr.length !== 0) {
+            return false;
+        }
+        throw new BadRequest(`value is not empty`);
     }
 
-    isGreaterThan(threshold: number, num: number): boolean {
-        return num >= threshold;
+    isLessThan(limit: number, num: number) {
+        if (num >= limit) {
+            throw new BadRequest(`value is not less then ${limit}`);
+        }
+        return true;
     }
 
-    isNumeric(value: unknown): boolean {
-        return /^[0-9]+$/.test(String(value));
+    isGreaterThan(threshold: number, num: number) {
+        if (num < threshold) {
+            throw new BadRequest(`value is not greater then ${threshold}`);
+        }
+        return true;
+    }
+
+    isNumeric(value: unknown) {
+        if (/^[0-9]+$/.test(String(value))) {
+            return true;
+        }
+        throw new BadRequest(`value is not numeric`);
+    }
+
+    length(length_to_validate: number, input: string | number) {
+        if (typeof input === "string") {
+            return input.length === length_to_validate;
+        }
+        throw new BadRequest(`value is not a string`);
+    }
+
+    isExist(accounts: IAccount[], amount: number) {
+        if (accounts.length === amount) {
+            return true;
+        }
+        throw new BadRequest(`value isn't exist`);
+    }
+
+    // if need account property then use balance
+    hasMinSum(min: number, amounts: number[]) {
+        const result = amounts.reduce((sum: number, amount: number): number => {
+            return sum + amount;
+        }, 0);
+        if (result >= min) {
+            return true;
+        }
+        throw new BadRequest(`didn't passed minimum sum`);
+    }
+
+    hasMinimalRemainingBalance(
+        min: number,
+        balanceTransfers: BalanceTransfer[]
+    ) {
+        const result = balanceTransfers.every(
+            (balanceTransfer) => balanceTransfer[0] - balanceTransfer[1] >= min
+        );
+        if (result) {
+            return true;
+        }
+        throw new BadRequest(`remaining amount doesn't pass the minimum`);
     }
 }
 

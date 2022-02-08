@@ -1,10 +1,40 @@
-import { IAccount, IAddress } from "../../types/accounts.interface.js";
+import {
+    AccountStatuses,
+    AccountTypes,
+    IAccount,
+    IAddress,
+} from "../../types/accounts.interface.js";
 
-export interface IBusinessAccount extends IAccount {
+export interface IBusinessAccountDto extends IAccount {
+    business_account_id: number;
     company_id: number;
     company_name: string;
     context: string;
-    address: IAddress;
+    address?: IAddress;
 }
 
-export type ICreateBusinessDto = Omit<IBusinessAccount, "id">;
+export type ICreateBusinessDto = Omit<
+    Omit<Omit<IBusinessAccountDto, "id">, "account_id">,
+    "business_account_id"
+>;
+
+export type IBusinessAccount = {
+    business_account_id: number;
+    company_name: string;
+    company_id: number;
+    context: string;
+    account_id: number;
+    address_id?: number;
+    currency: string;
+    balance: number;
+    type: AccountTypes;
+    status: AccountStatuses;
+} & IAddress;
+
+export interface ICreateBusinessAccount {
+    company_name: string;
+    company_id: number;
+    context: string;
+    account_id: number;
+    address_id?: number;
+}

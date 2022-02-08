@@ -12,6 +12,8 @@ import {
 import path from "path";
 import { attachRequestId } from "./middlewares/attachRequestId.middleware.js";
 import { logger } from "./middlewares/logger.middleware.js";
+import individualRouter from "./modules/individual/individual.router.js";
+import familyRouter from "./modules/family/family.router.js";
 
 const { HOST, PORT } = config;
 
@@ -41,13 +43,14 @@ class App {
     private initializeMiddlewares() {
         this.app.use(attachRequestId);
         this.app.use(logger(App.REQUESTS_LOG_PATH));
-        this.app.use(express.urlencoded());
         this.app.use(express.json());
     }
 
     private initializeRoutes() {
         const { API_PATH } = App;
         this.app.use(`${API_PATH}/business`, businessRouter.router);
+        this.app.use(`${API_PATH}/individual`, individualRouter.router);
+        this.app.use(`${API_PATH}/family`, familyRouter.router);
     }
 
     private initializeErrorMiddlewares() {
