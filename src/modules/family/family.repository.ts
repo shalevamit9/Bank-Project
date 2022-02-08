@@ -35,9 +35,17 @@ class FamilyRepository {
              ON family_accounts.family_account_id = family_individuals.family_account_id 
              WHERE family_accounts.family_account_id = ?;`;
 
-        const [owners] = (await db.query(get_family_owners, family_id)) as RowDataPacket[][];
-        type IndividualId = Pick<IIndividualAccountDto, "individual_account_id">; // maybe export to another module
-        const owners_ids = owners.map(owner => (owner as IndividualId).individual_account_id);
+        const [owners] = (await db.query(
+            get_family_owners,
+            family_id
+        )) as RowDataPacket[][];
+        type IndividualId = Pick<
+            IIndividualAccountDto,
+            "individual_account_id"
+        >; // maybe export to another module
+        const owners_ids = owners.map(
+            (owner) => (owner as IndividualId).individual_account_id
+        );
 
         // console.log("fam repo getFamilyOwnersIds: family id = ", family_id);
         // console.log("owners_ids: ", owners_ids);
@@ -79,7 +87,6 @@ class FamilyRepository {
 
         // console.log("addresses_ids: ", addresses_ids);
 
-
         const owners_accounts = individual_accounts.map(async (account, i) => {
             account.address = await addressRepository.getAddressById(
                 addresses_ids[i]
@@ -93,7 +100,6 @@ class FamilyRepository {
         family.owners = await Promise.all(owners_accounts);
 
         // console.log("fam repo getfulldetails AFTER filling: family = ", family);
-
 
         return family;
     }
@@ -190,7 +196,6 @@ class FamilyRepository {
 
     //     return true;
     // }
-
 
     // ===========================================================
     //      GIDI's Functions - START

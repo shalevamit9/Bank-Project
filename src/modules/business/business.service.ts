@@ -9,6 +9,7 @@ import {
 import businessRepository from "./business.repository.js";
 import { AccountTypes } from "../../types/accounts.interface.js";
 import { IAccountFormatter } from "../../types/formatter.interface.js";
+import individualService from "../individual/individual.service.js";
 
 class BusinessService
     implements IAccountFormatter<IBusinessAccount, IBusinessAccountDto>
@@ -29,6 +30,7 @@ class BusinessService
             business_account_ids
         );
         if (businesses.length === 0) return null;
+        console.log(businesses);
 
         return businesses.map((business) => this.formatAccount(business));
     }
@@ -69,23 +71,25 @@ class BusinessService
         destination_id: number,
         amount: number
     ) {
-        const [source_account, destination_account] =
-            await businessRepository.getBusinesses([source_id, destination_id]);
+        const [source_account, destination_account] = await Promise.all([
+            businessRepository.getBusinessById(source_id),
+            businessRepository.getBusinessById(destination_id),
+        ]);
 
         const isValidTransfer =
             (source_account.company_id === destination_account.company_id &&
-                amount > 10000) ||
+                amount <= 10000) ||
             (source_account.company_id !== destination_account.company_id &&
-                amount > 1000);
-        if (isValidTransfer) return null;
+                amount <= 1000);
+        if (!isValidTransfer) return null;
 
-        const result = await businessRepository.transferToBusiness(
+        const isTransfered = await businessRepository.transferToBusiness(
             source_account,
             destination_account,
             amount
         );
+        if (!isTransfered) return null;
 
-        if (!result) return null;
         const transaction = {
             source_account: {
                 business_account_id: source_account.business_account_id,
@@ -98,22 +102,50 @@ class BusinessService
                 currency: destination_account.currency,
             },
         };
-
         return transaction;
     }
 
-    async transferBusinessToIndividual(
+    // still need to test after finishing individual module
+    async transferToIndividual(
         source_id: number,
         destination_id: number,
         amount: number
     ) {
-        const transaction = await businessRepository.transferToIndividual(
-            source_id,
-            destination_id,
+        const [business_account, individual_account] = await Promise.all([
+            businessRepository.getBusinessById(source_id),
+            individualService.getIndividualById(destination_id),
+        ]);
+
+        const isValidTransfer = amount <= 1000;
+        if (isValidTransfer) return null;
+
+        const isTransfered = await businessRepository.transferToIndividual(
+            business_account,
+            individual_account,
             amount
         );
+        if (!isTransfered) return null;
+
+        const transaction = {
+            source_account: {
+                business_account_id: business_account.business_account_id,
+                balance: business_account.balance,
+                currency: business_account.currency,
+            },
+            destination_account: {
+                business_account_id: individual_account.individual_account_id,
+                balance: individual_account.balance,
+                currency: individual_account.currency,
+            },
+        };
         return transaction;
     }
+
+    async fxTransferToBusiness(
+        source_id: number,
+        destination_id: number,
+        amount: number
+    ) {}
 
     formatAccount(business: IBusinessAccount) {
         const business_dto: IBusinessAccountDto = {

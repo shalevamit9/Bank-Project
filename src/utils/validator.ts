@@ -53,24 +53,24 @@ class Validator {
     }
 
     isNumeric(value: unknown) {
-        if (/^[0-9]+$/.test(String(value))) {
+        if (/^-?[0-9]+$/.test(String(value))) {
             return true;
         }
         throw new BadRequest(`value is not numeric`);
     }
 
     length(length_to_validate: number, input: string | number) {
-        if (typeof input === "string") {
-            return input.length === length_to_validate;
+        if (String(input).length === length_to_validate) {
+            return true;
         }
-        throw new BadRequest(`value is not a string`);
+        throw new BadRequest("Length doesn't match");
     }
 
     isExist(accounts: IAccount[], amount: number) {
         if (accounts.length === amount) {
             return true;
         }
-        throw new BadRequest(`value isn't exist`);
+        throw new BadRequest(`value doesn't exist`);
     }
 
     // if need account property then use balance

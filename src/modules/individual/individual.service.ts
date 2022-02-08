@@ -8,8 +8,10 @@ class IndividualService {
         return individual;
     };
 
-    getIndividual = async (id: number) => {
-        const individual = await individualRepository.getIndividual(id);
+    getIndividualById = async (individual_account_id: number) => {
+        const individual = await individualRepository.getIndividualById(
+            individual_account_id
+        );
         return individual;
     };
 

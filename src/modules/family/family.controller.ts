@@ -14,15 +14,16 @@ class FamilyController {
                     currency 
                     list of owning individual accounts - tuples [  primaryID, amount ]
         */
-       
+
         // const family_data: ICreateFamily = { currency: req.body.currency, context: req.body.context || undefined };
         const family_data: ICreateFamily = req.body;
         // const owning_individual_accounts = req.body.individual_accounts as FamilyMemberContribution[];
 
-        const family: IFamilyAccountDB = await familyService.createFamilyAccount(
-            family_data
-            // owning_individual_accounts
-        );
+        const family: IFamilyAccountDB =
+            await familyService.createFamilyAccount(
+                family_data
+                // owning_individual_accounts
+            );
 
         const response: ResponseMessage = {
             status: 201,

@@ -58,7 +58,7 @@ class BusinessController {
     transferToIndividual: RequestHandler = async (req, res) => {
         const { source_id, destination_id } = req.params;
         const { amount } = req.body;
-        const transaction = await businessService.transferBusinessToIndividual(
+        const transaction = await businessService.transferToIndividual(
             Number(source_id),
             Number(destination_id),
             amount as number
@@ -73,8 +73,10 @@ class BusinessController {
         res.status(response.status).json(response);
     };
 
-    fxTransferBusinessToBusiness: RequestHandler = async (req, res) => {
-        throw new Error("Method not implemented.");
+    fxTransferToBusiness: RequestHandler = async (req, res) => {
+        const { source_id, destination_id } = req.params;
+        const { amount } = req.body;
+        const transaction = await businessService.fxTransferToBusiness;
     };
 }
 
