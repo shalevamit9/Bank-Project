@@ -10,7 +10,7 @@ export enum AccountStatuses {
 }
 
 export interface IAccount {
-    account_id: number; // (primary ID)
+    account_id: number;
     currency: string;
     balance: number;
     type: AccountTypes; // "Individual" | "Business" | "Family";
@@ -29,3 +29,4 @@ export interface IAddress {
 }
 
 export type BalanceTransfer = [balance: number, amount: number];
+export type amountTransfer = [primary_id: number, amount: number]; // FamilyMemberContiburion

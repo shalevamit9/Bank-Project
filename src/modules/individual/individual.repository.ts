@@ -4,8 +4,8 @@ import { db } from "../../db/mysql.connection.js";
 import {
     IUpdateIndividualDto,
     ICreateIndividualDto,
-    IIndividualAccount,
 } from "./individual.interface.js";
+import { IIndividualAccountDto } from "./individual.interface.js";
 
 class IndividualRepository {
     createIndividual = async (payload: ICreateIndividualDto) => {
@@ -18,10 +18,8 @@ class IndividualRepository {
 
     getIndividual = async (id: number) => {
         const query = "SELECT * FROM individual WHERE id=?";
-        const result = await db.query(query, [id]);
-        const match = result[0] as any[];
-        const users = match === undefined ? null : match;
-        return users;
+        const [users] = (await db.query(query, [id])) as RowDataPacket[][];
+        return users[0] as IIndividualAccountDto;
     };
 
     getIndividuals = async (individual_ids: number[]) => {
@@ -44,30 +42,6 @@ class IndividualRepository {
         const query = "UPDATE individual SET ? WHERE id = ?";
         await db.query(query, [payload, id]);
         const individual = await this.getIndividual(id);
-        return individual;
-    };
-
-    addIndividualToFamily = async (
-        individual_id: number,
-        family_id: number
-    ) => {
-        const query = "INSERT INTO family_individuals SET ?";
-        await db.query(query, {
-            individual_account_id: individual_id,
-            family_account_id: family_id,
-        });
-        const individual = await this.getIndividual(individual_id);
-        return individual;
-    };
-
-    removeIndividualFromFamily = async (
-        individual_id: number,
-        family_id: number
-    ) => {
-        const query =
-            "DELETE FROM family_individuals WHERE individual_account_id = ? and family_account_id = ?";
-        await db.query(query, [individual_id, family_id]);
-        const individual = await this.getIndividual(individual_id);
         return individual;
     };
 }

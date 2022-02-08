@@ -1,12 +1,11 @@
-import { IAccount } from "../../types/accounts.interface.js";
-import { IIndividualAccount } from "../individual/individual.interface.js";
+import { amountTransfer, IAccount } from "../../types/accounts.interface.js";
+import { IIndividualAccountDto } from "../individual/individual.interface.js";
 
 export interface IFamilyAccount extends IAccount {
-    context: string; // (travel / morgage / emergency / savings / checking) --> open text
-    owners: IIndividualAccount[] | number[]; //  ( collection of IndividualAccount models or IDs )
+    family_account_id: number;
+    context?: string; // (travel / morgage / emergency / savings / checking) --> free text
+    owners?: IIndividualAccountDto[] | number[]; //  collection of IndividualAccount models or IDs
 }
 
-// what will be the primary key in the database? a meaningless id?
-
-export type ICreateFamily = Omit<IFamilyAccount, "account_id">;
+export type ICreateFamily = Pick<IFamilyAccount, "currency" | "context"> & {owners:amountTransfer[]};
 export type IFamilyAccountDB = Partial<IFamilyAccount>;

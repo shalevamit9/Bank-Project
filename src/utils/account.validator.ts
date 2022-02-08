@@ -3,27 +3,37 @@ import {
     IAccount,
     AccountStatuses,
 } from "../types/accounts.interface.js";
+import { BadRequest } from "../exceptions/badRequest.exception.js";
 
 class AccountValidator {
     isActive(accounts: IAccount[]) {
         const result = accounts.every(
             (account) => account.status === AccountStatuses.Active
         );
-        return result;
+        if (result) {
+            return true;
+        }
+        throw new BadRequest(`is not active`);
     }
 
     isTypeOf(types: AccountTypes[], accounts: IAccount[]) {
         const result = accounts.every((account) =>
             types.some((type) => type === account.type)
         );
-        return result;
+        if (result) {
+            return true;
+        }
+        throw new BadRequest(`is not type of ${types[0]}`);
     }
 
     isSameCurrency(currency: string, accounts: IAccount[]) {
         const result = accounts.every(
             (account) => account.currency === currency
         );
-        return result;
+        if (result) {
+            return true;
+        }
+        throw new BadRequest(`is not the same currency as ${currency}`);
     }
 }
 

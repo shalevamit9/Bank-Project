@@ -19,16 +19,6 @@ class IndividualService {
         );
         return individuals;
     };
-
-    // addIndividualToFamily = async (individual_id : number, family_id : number) => {
-    //   const individual = await individualRepository.updateIndividualByID(individual_id, {family_id});
-    //   return individual;
-    // };
-
-    // removeIndividualFromFamily = async (individual_id : number) => {
-    //   const individual = await individualRepository.updateIndividualByID(individual_id, {family_id : null});
-    //   return individual;
-    // };
 }
 
 const individualService = new IndividualService();

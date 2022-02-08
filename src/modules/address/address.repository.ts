@@ -1,4 +1,4 @@
-import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { db } from "../../db/mysql.connection.js";
 import { IAddress } from "../../types/accounts.interface";
 import { ICreateAddress } from "./address.interface.js";
