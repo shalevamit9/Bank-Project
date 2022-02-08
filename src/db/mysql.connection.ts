@@ -5,9 +5,8 @@ const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME } = config;
 
 export let db: mysql.Connection;
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export default async function connectDb() {
-    if (db) return db;
+export default async function connectDb(): Promise<void> {
+    if (db) return;
 
     db = await mysql.createConnection({
         host: DB_HOST,
