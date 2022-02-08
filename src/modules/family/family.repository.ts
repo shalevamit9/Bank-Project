@@ -7,7 +7,7 @@ import {
     amountTransfer,
 } from "../../types/accounts.interface.js";
 import addressRepository from "../address/address.repository.js";
-import { IIndividualAccount } from "../individual/individual.interface.js";
+import { IIndividualAccountDto } from "../individual/individual.interface.js";
 import {
     IFamilyAccount,
     ICreateFamily,
@@ -36,7 +36,7 @@ class FamilyRepository {
              WHERE family_accounts.family_account_id = ?;`;
 
         const [owners] = (await db.query(get_family_owners, family_id)) as RowDataPacket[][];
-        type IndividualId = Pick<IIndividualAccount, "individual_account_id">; // maybe export to another module
+        type IndividualId = Pick<IIndividualAccountDto, "individual_account_id">; // maybe export to another module
         const owners_ids = owners.map(owner => (owner as IndividualId).individual_account_id);
 
         // console.log("fam repo getFamilyOwnersIds: family id = ", family_id);
@@ -62,7 +62,6 @@ class FamilyRepository {
         const get_individual_accounts = `SELECT *
         FROM individual_accounts 
         INNER JOIN accounts ON individual_accounts.account_id = accounts.account_id
-        LEFT JOIN addresses ON individual_accounts.address_id = addresses.address_id
         WHERE individual_account_id IN (${owners_ids_placeholder});`;
 
         // console.log("question string: ", owners_ids_placeholder);
@@ -86,7 +85,7 @@ class FamilyRepository {
                 addresses_ids[i]
             );
             delete account.address_id;
-            return account as IIndividualAccount;
+            return account as IIndividualAccountDto;
         });
 
         // console.log("fam repo getfulldetails before filling: family = ", family);
@@ -192,25 +191,32 @@ class FamilyRepository {
     //     return true;
     // }
 
-    addIndividualsToFamily = async (individuals_id : number[], family_id : number) => {
-        let query = `INSERT INTO family_individuals (individual_account_id,family_account_id) VALUES `;
-        const valuesStr = '(?,?),';
-        individuals_id.forEach(()=> query += valuesStr);
-        query.substring(0,query.length-1);
-        await db.query(query, individuals_id.map(id=> [id,family_id]));
-        const family = await this.getFamily(family_id);
-        return family;
-    };
 
-    removeIndividualsFromFamily = async (individuals_id : number[], family_id : number) => {
-        let query = `DELETE FROM family_individuals WHERE `;
-        const valueStr = `individual_account_id = ? and family_account_id = ? OR`;
-        individuals_id.forEach(()=> query += valueStr);
-        query.substring(0,query.length-3);
-        await db.query(query, individuals_id.map(id=> [id,family_id]));
-        const family = await this.getFamily(family_id);
-        return family;
-    };
+    // ===========================================================
+    //      GIDI's Functions - START
+    // ===========================================================
+    // addIndividualsToFamily = async (individuals_id : number[], family_id : number) => {
+    //     let query = `INSERT INTO family_individuals (individual_account_id,family_account_id) VALUES `;
+    //     const valuesStr = '(?,?),';
+    //     individuals_id.forEach(()=> query += valuesStr);
+    //     query.substring(0,query.length-1);
+    //     await db.query(query, individuals_id.map(id=> [id,family_id]));
+    //     const family = await this.getFamily(family_id);
+    //     return family;
+    // };
+
+    // removeIndividualsFromFamily = async (individuals_id : number[], family_id : number) => {
+    //     let query = `DELETE FROM family_individuals WHERE `;
+    //     const valueStr = `individual_account_id = ? and family_account_id = ? OR`;
+    //     individuals_id.forEach(()=> query += valueStr);
+    //     query.substring(0,query.length-3);
+    //     await db.query(query, individuals_id.map(id=> [id,family_id]));
+    //     const family = await this.getFamily(family_id);
+    //     return family;
+    // };
+    // ===========================================================
+    //      GIDI's Functions - END
+    // ===========================================================
 }
 
 const familyRepository = new FamilyRepository();
