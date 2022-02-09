@@ -27,7 +27,7 @@ class Validator {
     }
 
     isNumeric(value: unknown) {
-        return /^[0-9]+$/.test(String(value));
+        return /^-?[0-9]+$/.test(String(value));
     }
 
     length(length_to_validate: number, input: string) {
