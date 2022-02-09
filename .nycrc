@@ -1,11 +1,15 @@
 {
     "extends": "@istanbuljs/nyc-config-typescript",
-    "include": ["src/**/*.ts"],
-    "exclude": [
-        "src/myModule.ts"
+    "include": [
+        "src/**/*.ts"
     ],
-    "extension": [".ts"],
-    "reporter": ["text","html"],
+    "extension": [
+        ".ts"
+    ],
+    "reporter": [
+        "text",
+        "html"
+    ],
     "report-dir": "./coverage",
-    "all":true
+    "all": true
 }
