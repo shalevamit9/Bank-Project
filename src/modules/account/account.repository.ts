@@ -47,9 +47,9 @@ class AccountRepository {
         WHERE account_id = ? OR account_id = ?;`,
             [
                 source_account.account_id,
-                source_amount,
+                source_account.balance,
                 destination_account.account_id,
-                destination_amount,
+                destination_account.balance,
                 source_account.account_id,
                 destination_account.account_id,
             ]
