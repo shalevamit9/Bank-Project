@@ -1,4 +1,4 @@
-// import fetch from "node-fetch";
+import fetch from "node-fetch";
 import { IAddress } from "../../types/accounts.interface.js";
 import accountService from "../account/account.service.js";
 import addressService from "../address/address.service.js";
