@@ -1,84 +1,49 @@
-import { BadRequest } from "../exceptions/badRequest.exception.js";
 import { BalanceTransfer, IAccount } from "../types/accounts.interface.js";
 import { IIndexable } from "../types/indexable.interface.js";
 
 class Validator {
     required(obj: IIndexable, mandatory_keys: string[]) {
-        return mandatory_keys.every((key) => {
-            if (!(key in obj)) {
-                throw new BadRequest(`the request is missing ${key} value`);
-            }
-            return true;
-        });
+        return mandatory_keys.every((key) => key in obj);
     }
 
     notExist(obj: IIndexable, mandatory_keys: string[]) {
-        return mandatory_keys.every((key) => {
-            if (key in obj) {
-                throw new BadRequest(`the request is missing ${key} value`);
-            }
-            return true;
-        });
+        return mandatory_keys.every((key) => !(key in obj));
     }
 
     isPositive(num: number) {
-        if (num > 0) {
-            return true;
-        }
-        throw new BadRequest(`value is not positive`);
+        return num > 0;
     }
 
     isEmpty(arr: any[]) {
-        if (arr.length !== 0) {
-            return false;
-        }
-        throw new BadRequest(`value is not empty`);
+        return arr.length === 0;
     }
 
     isLessThan(limit: number, num: number) {
-        if (num >= limit) {
-            throw new BadRequest(`value is not less then ${limit}`);
-        }
-        return true;
+        return num < limit;
     }
 
     isGreaterThan(threshold: number, num: number) {
-        if (num < threshold) {
-            throw new BadRequest(`value is not greater then ${threshold}`);
-        }
-        return true;
+        return num > threshold;
     }
 
     isNumeric(value: unknown) {
-        if (/^-?[0-9]+$/.test(String(value))) {
-            return true;
-        }
-        throw new BadRequest(`value is not numeric`);
+        return /^[0-9]+$/.test(String(value));
     }
 
-    length(length_to_validate: number, input: string | number) {
-        if (String(input).length === length_to_validate) {
-            return true;
-        }
-        throw new BadRequest("Length doesn't match");
+    length(length_to_validate: number, input: string) {
+        return input.length === length_to_validate;
     }
 
     isExist(accounts: IAccount[], amount: number) {
-        if (accounts.length === amount) {
-            return true;
-        }
-        throw new BadRequest(`value doesn't exist`);
+        return accounts.length === amount;
     }
 
-    // if need account property then use balance
     hasMinSum(min: number, amounts: number[]) {
         const result = amounts.reduce((sum: number, amount: number): number => {
             return sum + amount;
         }, 0);
-        if (result >= min) {
-            return true;
-        }
-        throw new BadRequest(`didn't passed minimum sum`);
+
+        return result >= min;
     }
 
     hasMinimalRemainingBalance(
@@ -88,10 +53,7 @@ class Validator {
         const result = balanceTransfers.every(
             (balanceTransfer) => balanceTransfer[0] - balanceTransfer[1] >= min
         );
-        if (result) {
-            return true;
-        }
-        throw new BadRequest(`remaining amount doesn't pass the minimum`);
+        return result;
     }
 }
 
