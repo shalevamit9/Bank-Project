@@ -7,5 +7,11 @@ export interface IFamilyAccount extends IAccount {
     owners?: IIndividualAccountDto[] | number[]; //  collection of IndividualAccount models or IDs
 }
 
-export type ICreateFamily = Pick<IFamilyAccount, "currency" | "context"> & {owners:amountTransfer[]};
+export type ICreateFamily = Pick<IFamilyAccount, "currency" | "context"> & {
+    owners: amountTransfer[];
+};
+
+export type IUpdateMembers = {
+    individual_accounts: amountTransfer[];
+};
 export type IFamilyAccountDB = Partial<IFamilyAccount>;

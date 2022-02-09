@@ -1,18 +1,15 @@
 // import { BadRequest } from "../../exceptions/badRequest.exception.js";
 // import { FamilyMemberContribution } from "../../types/accounts.interface.js";
 // import { BadRequest } from "../../exceptions/badRequest.exception.js";
+import { amountTransfer } from "../../types/accounts.interface.js";
 import { ICreateFamily } from "./family.interface.js";
 import familyRepository from "./family.repository.js";
 
 class FamilyService {
-    async createFamilyAccount(
-        family_data: ICreateFamily
-        // owning_accounts: FamilyMemberContribution[]
-    ) {
-        // const owning_accounts_ids = owning_accounts.map((account_contribution) => account_contribution[0]);
+    async createFamilyAccount(family_data: ICreateFamily) {
         const new_family = await familyRepository.createFamilyAccount(
             family_data
-        ); // , owning_accounts); // , owning_accounts_ids);
+        );
 
         // if(!new_family) {
         //     throw new BadRequest("failed creating new family account");
@@ -26,7 +23,7 @@ class FamilyService {
 
     async getFamilyDetails(family_id: number, details_level: string) {
         let family;
-        console.log("service: ", details_level);
+
         if (details_level.toLowerCase() === "short") {
             family = await familyRepository.getShortFamilyDetails(family_id);
         } else {
@@ -40,20 +37,43 @@ class FamilyService {
         return family;
     }
 
-    addFamilyMembers(id: number, individual_account_ids: number[]) {
-        throw new Error(
-            "Method not implemented." +
-                id.toString() +
-                individual_account_ids.toString()
+    async addFamilyMembers(
+        family_id: number,
+        individual_accounts: amountTransfer[],
+        details_level: string
+    ) {
+        await familyRepository.addMembersToFamily(
+            family_id,
+            individual_accounts
         );
+
+        let family;
+        if (details_level.toLowerCase() === "short") {
+            family = await familyRepository.getShortFamilyDetails(family_id);
+        } else {
+            family = await familyRepository.getFullFamilyDetails(family_id);
+        }
+        return family;
     }
 
-    removeFamilyMembers(id: number, individual_account_ids: number[]) {
-        throw new Error(
-            "Method not implemented." +
-                id.toString() +
-                individual_account_ids.toString()
+    async removeFamilyMembers(
+        family_id: number,
+        individual_accounts: amountTransfer[],
+        details_level: string
+    ) {
+        await familyRepository.removeMembersFromFamily(
+            family_id,
+            individual_accounts
         );
+
+        let family;
+        if (details_level.toLowerCase() === "short") {
+            family = await familyRepository.getShortFamilyDetails(family_id);
+        } else {
+            family = await familyRepository.getFullFamilyDetails(family_id);
+        }
+
+        return family;
     }
 
     closeAccount(id: number) {
@@ -74,6 +94,16 @@ class FamilyService {
         /*
          * the amount to transfer is reduced from the balance of the family account!
          * (each family member puts money in the family account when he joins)
+         */
+
+        /**
+         * 
+         * UPDATE account SET balance = CASE WHEN account_id = 1 THEN 1000
+                            WHEN account_id = 2 THEN 2000
+                            END
+                            WHERE account_id = 1 OR account_id = 2;
+            11:57
+            עבור ביצוע ההעברה בין חשבונות בשאילתא אחת.
          */
     }
 }

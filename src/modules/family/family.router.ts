@@ -19,17 +19,17 @@ class FamilyRouter {
 
         this.router.get("/:id", raw(familyController.getFamilyDetails)); // input: the family account primaryID, "short"/"full" details level --> in query string
 
-        // // add individual accounts to the family account
-        // this.router.patch(
-        //     "/:id/addMembers",
-        //     raw(familyController.addFamilyMembers)
-        // ); // input: the family account primaryID, a list of individual account primaryIDs, short or full details
+        // add individual accounts to the family account
+        this.router.patch(
+            "/:id/addMembers",
+            raw(familyController.addFamilyMembers)
+        ); // input: the family account primaryID, a list of individual account primaryIDs, short or full details
 
-        // // remove individual accounts from the family account
-        // this.router.patch(
-        //     "/:id/removeMembers",
-        //     raw(familyController.removeFamilyMembers)
-        // ); // input: the family account primaryID, a list of individual account primaryIDs
+        // remove individual accounts from the family account
+        this.router.patch(
+            "/:id/removeMembers",
+            raw(familyController.removeFamilyMembers)
+        ); // input: the family account primaryID, a list of individual account primaryIDs
 
         // // close family account --> delete or patch?
         // this.router.patch("/:id", raw(familyController.closeAccount));
