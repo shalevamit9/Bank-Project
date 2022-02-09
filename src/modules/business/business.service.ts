@@ -10,8 +10,8 @@ import {
 import businessRepository from "./business.repository.js";
 import { AccountTypes } from "../../types/accounts.interface.js";
 import { IAccountFormatter } from "../../types/formatter.interface.js";
-import individualService from "../individual/individual.service.js";
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
+import individualRepository from "../individual/individual.repository.js";
 
 interface IExchangeRate {
     rates: {
@@ -108,7 +108,7 @@ class BusinessService
     ) {
         const [business_account, individual_account] = await Promise.all([
             businessRepository.getBusinessById(source_id),
-            individualService.getIndividualById(destination_id),
+            individualRepository.getIndividualById(destination_id),
         ]);
 
         const isValidTransfer = amount <= 1000;

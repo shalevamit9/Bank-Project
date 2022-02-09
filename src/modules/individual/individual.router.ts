@@ -9,9 +9,10 @@ class IndividualRouter {
 
   constructor() {
       
-      this.router.post("/", raw(individualController.createIndividual));
+    this.router.get("/:id", raw(individualController.getIndividualById));
+    
+    this.router.post("/", raw(individualController.createIndividualAccount));
   
-      this.router.get("/:id", raw(individualController.getIndividual));
   }
 }
 

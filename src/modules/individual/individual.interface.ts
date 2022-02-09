@@ -11,7 +11,7 @@ export interface IIndividualAccountDto extends IAccount {
     first_name: string;
     last_name: string;
     email: string;
-    address: IAddress;
+    address?: IAddress;
 }
 
 export type IIndividualAccount = {
@@ -27,5 +27,16 @@ export type IIndividualAccount = {
     email: string;
 } & IAddress;
 
-export type ICreateIndividualDto = Omit<IIndividualAccountDto, "id">;
+export interface ICreateIndividualAccount {
+    first_name: string;
+    last_name: string;
+    email: string;
+    account_id: number;
+    individual_id: number;
+    address_id?: number;
+}
+
+
+
+export type ICreateIndividualDto = Omit<Omit<Omit<IIndividualAccountDto, "id">, "account_id">, "individual_account_id">;
 export type IUpdateIndividualDto = Partial<ICreateIndividualDto>;
