@@ -6,9 +6,10 @@ import accountValidator from "../../utils/account.validator.js";
 // import businessService from "../business/business.service.js";
 // import individualService from "../individual/individual.service.js";
 import { IBusinessAccount } from "./business.interface.js";
-import businessService from "./business.service.js";
 import businessRepository from "./business.repository.js";
 import { AccountTypes } from "../../types/accounts.interface.js";
+import { IValidationResult } from "../../types/validation.interface.js";
+import { validationResultsHandler } from "../../utils/validation.utils.js";
 
 class BusinessValidator {
     createBusiness: RequestHandler = (
@@ -16,15 +17,29 @@ class BusinessValidator {
         res: Response,
         next: NextFunction
     ) => {
+        const results: IValidationResult[] = [];
         const business_dto: IBusinessAccount = req.body;
-        validator.required(business_dto, [
-            "company_id",
-            "company_name",
-            "currency",
-        ]);
-        validator.isNumeric(business_dto.company_id);
-        validator.isGreaterThan(10000000, Number(business_dto.company_id));
-        validator.length(8, business_dto.company_id);
+        const mandatory_keys = ["company_id", "company_name", "currency"];
+        results.push({
+            is_valid: validator.required(business_dto, mandatory_keys),
+            message: `At least one of the following properties are missing [${mandatory_keys.toString()}]`,
+        });
+        results.push({
+            is_valid: validator.isNumeric(business_dto.company_id),
+            message: "company_id is not numeric",
+        });
+        results.push({
+            is_valid: validator.isGreaterThan(
+                10000000,
+                Number(business_dto.company_id)
+            ),
+            message: "company_id is not greater than 10000000",
+        });
+        results.push({
+            is_valid: validator.length(8, String(business_dto.company_id)),
+            message: "company_id length is not 8",
+        });
+        validationResultsHandler(results);
 
         next();
     };
