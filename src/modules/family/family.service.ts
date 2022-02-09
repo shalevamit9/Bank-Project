@@ -2,8 +2,8 @@ import {
     AccountStatuses,
     AccountTypes,
     TransferTuple,
-    IAccount,
 } from "../../types/accounts.interface.js";
+import { ICreateAccount } from "../account/account.interface.js";
 import {
     IIndividualAccount,
     IIndividualAccountDto,
@@ -13,11 +13,10 @@ import { ICreateFamily } from "./family.interface.js";
 import familyRepository from "./family.repository.js";
 
 class FamilyService {
-    // implements IAccountFormatter<IFamilyAccount, IFamilyAccountDto>
     async createFamilyAccount(family_data: ICreateFamily) {
         const { currency } = family_data;
 
-        const account_data: Omit<IAccount, "account_id"> = {
+        const account_data: ICreateAccount = {
             currency,
             balance: 0,
             status: AccountStatuses.Active,
@@ -39,9 +38,7 @@ class FamilyService {
     }
 
     async getFamilyById(family_id: number, details_level = "full") {
-        let family;
-
-        family = await familyRepository.getShortFamilyDetails(family_id);
+        const family = await familyRepository.getShortFamilyDetails(family_id);
 
         if (
             details_level === "short" ||
@@ -67,8 +64,9 @@ class FamilyService {
         accounts_to_add: TransferTuple[],
         details_level: string
     ) {
-        const amounts_arr = accounts_to_add.map((account) => account[1]);
+        // const amounts_arr = accounts_to_add.map((account) => account[1]);
 
+        // use one reduce
         const amount_to_add = amounts_arr.reduce(
             (amount, total_amount) => amount + total_amount
         );
@@ -79,9 +77,7 @@ class FamilyService {
             amount_to_add
         );
 
-        let family;
-
-        family = await this.getFamilyById(
+        const family = await this.getFamilyById(
             family_id,
             details_level.toLowerCase()
         );
@@ -117,7 +113,9 @@ class FamilyService {
     }
 
     async closeFamilyAccount(family_id: number) {
-        await familyRepository.closeFamilyAccount(family_id);
+        // get family with accounts
+        const isClosed = await familyRepository.closeFamilyAccount(family_id);
+        return isClosed;
     }
 
     // transferToBusiness(

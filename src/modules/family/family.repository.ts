@@ -144,7 +144,6 @@ class FamilyRepository {
         accounts_to_remove: TransferTuple[],
         amount_to_remove: number
     ) {
-        // if (accounts_to_remove && accounts_to_remove.length > 0) {
         await db.beginTransaction();
 
         try {
@@ -204,7 +203,6 @@ class FamilyRepository {
             await db.rollback();
             throw err;
         }
-        // }
     }
 
     async closeFamilyAccount(family_id: number) {
@@ -221,7 +219,11 @@ class FamilyRepository {
             SET accounts.status = 0
             WHERE family_accounts.family_account_id = ?`;
 
-        await db.query(deactivate_account, family_id);
+        const [result] = (await db.query(
+            deactivate_account,
+            family_id
+        )) as ResultSetHeader[];
+        return !!result.affectedRows;
     }
 
     // async isInFamily(family_id: number, individual_account_ids: number[]) {

@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { RequestHandler } from "express";
+import { BadRequest } from "../../exceptions/badRequest.exception.js";
 import {
     // ErrorMessage,
     ResponseMessage,
@@ -81,7 +82,10 @@ class FamilyController {
     };
 
     closeFamilyAccount: RequestHandler = async (req, res) => {
-        await familyService.closeFamilyAccount(Number(req.params.id));
+        const isClosed = await familyService.closeFamilyAccount(
+            Number(req.params.id)
+        );
+        if (!isClosed) throw new BadRequest("Cannot close family account");
 
         const response: ResponseMessage = {
             status: 200,
