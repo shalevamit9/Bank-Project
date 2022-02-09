@@ -43,7 +43,6 @@ class App {
     private initializeMiddlewares() {
         this.app.use(attachRequestId);
         this.app.use(logger(App.REQUESTS_LOG_PATH));
-        this.app.use(express.urlencoded());
         this.app.use(express.json());
     }
 

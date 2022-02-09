@@ -1,18 +1,30 @@
-/* eslint-disable class-methods-use-this */
 import { RequestHandler } from "express";
+import { BadRequest } from "../../exceptions/badRequest.exception.js";
+import { UrlNotFoundException } from "../../exceptions/urlNotFound.exception.js";
 import { ResponseMessage } from "../../types/messages.interface.js";
 import { ICreateBusinessDto } from "./business.interface.js";
 import businessService from "./business.service.js";
 
 class BusinessController {
-    getBusinessAccountById: RequestHandler = (req, res) => {
-        throw new Error("Method not implemented.");
+    getBusinessAccountById: RequestHandler = async (req, res) => {
+        const business_account_id = req.params.id;
+        const business_dto = await businessService.getBusinessAccountById(
+            Number(business_account_id)
+        );
+        if (!business_dto) throw new UrlNotFoundException(req.originalUrl);
+
+        const response: ResponseMessage = {
+            status: 200,
+            message: "success",
+            data: { business_account: business_dto },
+        };
+        res.status(response.status).json(response);
     };
 
     createBusinessAccount: RequestHandler = async (req, res) => {
-        const businessDto: ICreateBusinessDto = req.body;
+        const create_business_dto: ICreateBusinessDto = req.body;
         const business = await businessService.createBusinessAccount(
-            businessDto
+            create_business_dto
         );
 
         const response: ResponseMessage = {
@@ -24,14 +36,15 @@ class BusinessController {
         res.status(response.status).json(response);
     };
 
-    transferBusinessToBusiness: RequestHandler = async (req, res) => {
+    transferToBusiness: RequestHandler = async (req, res) => {
         const { source_id, destination_id } = req.params;
         const { amount } = req.body;
-        const transaction = await businessService.transferBusinessToBusiness(
-            source_id,
-            destination_id,
-            amount as number
+        const transaction = await businessService.transferToBusiness(
+            Number(source_id),
+            Number(destination_id),
+            Number(amount)
         );
+        if (!transaction) throw new BadRequest("Passed Transfer Limit");
 
         const response: ResponseMessage = {
             status: 201,
@@ -41,12 +54,13 @@ class BusinessController {
 
         res.status(response.status).json(response);
     };
-    transferBusinessToIndividual: RequestHandler = async (req, res) => {
-        const { sourceId, destinationId } = req.params;
+
+    transferToIndividual: RequestHandler = async (req, res) => {
+        const { source_id, destination_id } = req.params;
         const { amount } = req.body;
-        const transaction = await businessService.transferBusinessToIndividual(
-            sourceId,
-            destinationId,
+        const transaction = await businessService.transferToIndividual(
+            Number(source_id),
+            Number(destination_id),
             amount as number
         );
 
@@ -59,8 +73,10 @@ class BusinessController {
         res.status(response.status).json(response);
     };
 
-    fxTransferBusinessToBusiness: RequestHandler = async (req, res) => {
-        throw new Error("Method not implemented.");
+    fxTransferToBusiness: RequestHandler = async (req, res) => {
+        const { source_id, destination_id } = req.params;
+        const { amount } = req.body;
+        const transaction = await businessService.fxTransferToBusiness;
     };
 }
 
