@@ -48,7 +48,7 @@ class App {
 
     private initializeRoutes() {
         const { API_PATH } = App;
-        // this.app.use(`${API_PATH}/business`, businessRouter.router);
+        this.app.use(`${API_PATH}/business`, businessRouter.router);
         this.app.use(`${API_PATH}/individual`, individualRouter.router);
         this.app.use(`${API_PATH}/family`, familyRouter.router);
     }

@@ -28,9 +28,9 @@ class FamilyController {
     };
 
     //  /api/family/:id?details=full
-    getFamilyDetails: RequestHandler = async (req, res) => {
+    getFamilyById: RequestHandler = async (req, res) => {
         const details_level = String(req.query.details) || "full";
-        const family = await familyService.getFamilyDetails(
+        const family = await familyService.getFamilyById(
             Number(req.params.id),
             details_level
         );
