@@ -91,13 +91,6 @@ class BusinessService
                 amount <= 1000);
         if (!isValidTransfer) throw new BadRequest("Passed Transfer Limit");
 
-        const isTransfered = await businessRepository.transferToBusiness(
-            source_account,
-            destination_account,
-            amount
-        );
-        if (!isTransfered) return null;
-
         const transaction = await accountService.transfer(
             source_account,
             destination_account,
