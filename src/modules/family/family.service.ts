@@ -38,7 +38,7 @@ class FamilyService {
         return family;
     }
 
-    async getFamilyById(family_id: number, details_level: string) {
+    async getFamilyById(family_id: number, details_level = "full") {
         let family;
 
         family = await familyRepository.getShortFamilyDetails(family_id);
