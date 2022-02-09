@@ -31,8 +31,8 @@ class FamilyRouter {
             raw(familyController.removeFamilyMembers)
         ); // input: the family account primaryID, a list of individual account primaryIDs
 
-        // // close family account --> delete or patch?
-        // this.router.patch("/:id", raw(familyController.closeAccount));
+        // close family account --> delete or patch?
+        this.router.patch("/:id/closeAccount", raw(familyController.closeFamilyAccount));
 
         // // transfer from a family account to a business account having the same currency
         // this.router.post(

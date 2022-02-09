@@ -1,6 +1,8 @@
 // import { BadRequest } from "../../exceptions/badRequest.exception.js";
 // import { FamilyMemberContribution } from "../../types/accounts.interface.js";
 // import { BadRequest } from "../../exceptions/badRequest.exception.js";
+import { db } from "../../db/mysql.connection.js";
+import { BadRequest } from "../../exceptions/badRequest.exception.js";
 import { amountTransfer } from "../../types/accounts.interface.js";
 import { ICreateFamily } from "./family.interface.js";
 import familyRepository from "./family.repository.js";
@@ -76,8 +78,8 @@ class FamilyService {
         return family;
     }
 
-    closeAccount(id: number) {
-        throw new Error("Method not implemented." + id.toString());
+    async closeFamilyAccount(family_id: number) {
+        await familyRepository.closeFamilyAccount(family_id);
     }
 
     transferToBusiness(

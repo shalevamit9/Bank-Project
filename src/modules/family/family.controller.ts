@@ -1,6 +1,5 @@
 /* eslint-disable class-methods-use-this */
 import { RequestHandler } from "express";
-import { amountTransfer } from "../../types/accounts.interface.js";
 import {
     // ErrorMessage,
     ResponseMessage,
@@ -81,23 +80,15 @@ class FamilyController {
         res.status(response.status).json(response);
     };
 
-    // closeAccount: RequestHandler = async (req, res) => {
-    //     const family = await familyService.closeAccount(Number(req.params.id));
+    closeFamilyAccount: RequestHandler = async (req, res) => {
+        await familyService.closeFamilyAccount(Number(req.params.id));
 
-    //     if (family) {
-    //         const response: ResponseMessage = {
-    //             status: 200,
-    //             message: "success",
-    //         };
-    //         res.status(response.status).json(response);
-    //     } else {
-    //         const e_response: ErrorMessage = {
-    //             status: 400,
-    //             message: "failure",
-    //         };
-    //         res.status(e_response.status).json(e_response);
-    //     }
-    // };
+        const response: ResponseMessage = {
+            status: 200,
+            message: "success",
+        };
+        res.status(response.status).json(response);
+    };
 
     // transferToBusiness: RequestHandler = async (req, res) => {
     //     const transfer_data = req.body;

@@ -255,6 +255,23 @@ class FamilyRepository {
         }
     }
 
+    async closeFamilyAccount(family_id: number) {
+        const family_to_close = await this.getShortFamilyDetails(family_id);
+
+        const family_owners = family_to_close.owners as number[];
+        if (family_owners.length > 0) {
+            throw new BadRequest("can't close family account because there are still owners left");
+        }
+
+        const deactivate_account = 
+            `UPDATE accounts
+            INNER JOIN family_accounts ON accounts.account_id = family_accounts.account_id
+            SET accounts.status = 0
+            WHERE family_accounts.family_account_id = ?`;
+
+        await db.query(deactivate_account, family_id);
+    }
+
     // async isInFamily(family_id: number, individual_account_ids: number[]) {
     //     // const family = await this.getFamilyById(family_id);
     //     const getFamilyOwners = `SELECT family_individuals.individual_account_id
@@ -275,7 +292,7 @@ class FamilyRepository {
     //         }
     //     }
 
-    //     return individual_account_ids.every((id) => owners_ids.includes(id));
+    //    // return individual_account_ids.every((id) => owners_ids.includes(id));
 
     //     return true;
     // }
