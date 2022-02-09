@@ -1,25 +1,24 @@
 /* eslint-disable class-methods-use-this */
-import { RowDataPacket } from "mysql2";
+import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { db } from "../../db/mysql.connection.js";
 import {
     IUpdateIndividualDto,
-    ICreateIndividualDto,
+    ICreateIndividualAccount,
+    IIndividualAccount,
 } from "./individual.interface.js";
-import { IIndividualAccountDto } from "./individual.interface.js";
 
 class IndividualRepository {
-    createIndividual = async (payload: ICreateIndividualDto) => {
-        const query = "INSERT INTO individual SET ?";
-        const result = await db.query(query, [payload]);
-        const match = result[0] as any[];
-        const users = match === undefined ? null : match;
-        return users;
-    };
-
-    getIndividual = async (id: number) => {
-        const query = "SELECT * FROM individual WHERE id=?";
-        const [users] = (await db.query(query, [id])) as RowDataPacket[][];
-        return users[0] as IIndividualAccountDto;
+    getIndividualById = async (individual_account_id: number) => {
+        const query = `SELECT * 
+        FROM individual_accounts ia 
+        JOIN accounts a on ia.account_id = a.account_id
+        LEFT JOIN addresses ad ON ia.address_id = ad.address_id
+        WHERE individual_account_id = ?`;
+        const [users] = (await db.query(
+            query,
+            individual_account_id
+        )) as RowDataPacket[][];
+        return users[0] as IIndividualAccount;
     };
 
     getIndividuals = async (individual_ids: number[]) => {
@@ -35,14 +34,23 @@ class IndividualRepository {
         return accounts as IIndividualAccount[];
     };
 
+    createIndividualAccount = async (payload: ICreateIndividualAccount) => {
+        const query = "INSERT INTO individual_accounts SET ?";
+        const [result] = (await db.query(query, [
+            payload,
+        ])) as ResultSetHeader[];
+        const individual_dto = this.getIndividualById(result.insertId);
+        return individual_dto;
+    };
+
     updateIndividualByID = async (
         id: number,
         payload: IUpdateIndividualDto
     ) => {
-        const query = "UPDATE individual SET ? WHERE id = ?";
+        const query = "UPDATE individual_accounts SET ? WHERE id = ?";
         await db.query(query, [payload, id]);
-        const individual = await this.getIndividual(id);
-        return individual;
+        const individual_dto = await this.getIndividualById(id);
+        return individual_dto;
     };
 }
 

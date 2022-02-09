@@ -1,6 +1,6 @@
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { db } from "../../db/mysql.connection.js";
-import individualService from "../individual/individual.service.js";
+import { IIndividualAccount } from "../individual/individual.interface.js";
 import {
     IBusinessAccount,
     ICreateBusinessAccount,
@@ -66,42 +66,32 @@ class BusinessRepository {
     }
 
     async transferToIndividual(
-        source_id: number,
-        destination_id: number,
+        source_business_account: IBusinessAccount,
+        destination_individual_account: IIndividualAccount,
         amount: number
     ) {
-        // const pendingAccounts = [
-        //     this.getBusinessById(source_id),
-        //     individualService.getIndividual(destination_id),
-        // ];
-        // const [source_account, destination_account] = await Promise.all(
-        //     pendingAccounts
-        // );
-        // source_account.balance -= amount;
-        // destination_account.balance += amount;
-        // const [withdraw_result] = (await db.query(
-        //     "UPDATE accounts SET balance = ? WHERE account_id = ?",
-        //     [source_account.balance, source_account.account_id]
-        // )) as ResultSetHeader[];
-        // if (!withdraw_result.affectedRows) return false;
-        // const [deposit_result] = (await db.query(
-        //     "UPDATE accounts SET balance = ? WHERE account_id = ?",
-        //     [destination_account.balance, destination_account.account_id]
-        // )) as ResultSetHeader[];
-        // if (!deposit_result.affectedRows) return false;
-        // const transaction = {
-        //     source_account: {
-        //         business_account_id: source_account.business_account_id,
-        //         balance: source_account.balance,
-        //         currency: source_account.currency,
-        //     },
-        //     destination_account: {
-        //         business_account_id: destination_account.business_account_id,
-        //         balance: destination_account.balance,
-        //         currency: destination_account.currency,
-        //     },
-        // };
-        // return transaction;
+        source_business_account.balance -= amount;
+        destination_individual_account.balance += amount;
+
+        const [withdraw_result] = (await db.query(
+            "UPDATE accounts SET balance = ? WHERE account_id = ?",
+            [
+                source_business_account.balance,
+                source_business_account.account_id,
+            ]
+        )) as ResultSetHeader[];
+        if (!withdraw_result.affectedRows) return false;
+
+        const [deposit_result] = (await db.query(
+            "UPDATE accounts SET balance = ? WHERE account_id = ?",
+            [
+                destination_individual_account.balance,
+                destination_individual_account.account_id,
+            ]
+        )) as ResultSetHeader[];
+        if (!deposit_result.affectedRows) return false;
+
+        return !!deposit_result.affectedRows;
     }
 }
 
