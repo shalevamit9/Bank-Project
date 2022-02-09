@@ -1,3 +1,4 @@
+import fetch from "node-fetch";
 import { IAddress } from "../../types/accounts.interface.js";
 import accountService from "../account/account.service.js";
 import addressService from "../address/address.service.js";
@@ -10,6 +11,13 @@ import businessRepository from "./business.repository.js";
 import { AccountTypes } from "../../types/accounts.interface.js";
 import { IAccountFormatter } from "../../types/formatter.interface.js";
 import individualService from "../individual/individual.service.js";
+import { BadRequest } from "../../exceptions/badRequest.exception.js";
+
+interface IExchangeRate {
+    rates: {
+        [key: string]: number;
+    };
+}
 
 class BusinessService
     implements IAccountFormatter<IBusinessAccount, IBusinessAccountDto>
@@ -81,7 +89,7 @@ class BusinessService
                 amount <= 10000) ||
             (source_account.company_id !== destination_account.company_id &&
                 amount <= 1000);
-        if (!isValidTransfer) return null;
+        if (!isValidTransfer) throw new BadRequest("Passed Transfer Limit");
 
         const isTransfered = await businessRepository.transferToBusiness(
             source_account,
@@ -90,18 +98,12 @@ class BusinessService
         );
         if (!isTransfered) return null;
 
-        const transaction = {
-            source_account: {
-                business_account_id: source_account.business_account_id,
-                balance: source_account.balance,
-                currency: source_account.currency,
-            },
-            destination_account: {
-                business_account_id: destination_account.business_account_id,
-                balance: destination_account.balance,
-                currency: destination_account.currency,
-            },
-        };
+        const transaction = await accountService.transfer(
+            source_account,
+            destination_account,
+            amount,
+            amount
+        );
         return transaction;
     }
 
@@ -117,7 +119,7 @@ class BusinessService
         ]);
 
         const isValidTransfer = amount <= 1000;
-        if (isValidTransfer) return null;
+        if (!isValidTransfer) throw new BadRequest("Passed Transfer Limit");
 
         const isTransfered = await businessRepository.transferToIndividual(
             business_account,
@@ -126,18 +128,12 @@ class BusinessService
         );
         if (!isTransfered) return null;
 
-        const transaction = {
-            source_account: {
-                business_account_id: business_account.business_account_id,
-                balance: business_account.balance,
-                currency: business_account.currency,
-            },
-            destination_account: {
-                business_account_id: individual_account.individual_account_id,
-                balance: individual_account.balance,
-                currency: individual_account.currency,
-            },
-        };
+        const transaction = await accountService.transfer(
+            business_account,
+            individual_account,
+            amount,
+            amount
+        );
         return transaction;
     }
 
@@ -145,7 +141,44 @@ class BusinessService
         source_id: number,
         destination_id: number,
         amount: number
-    ) {}
+    ) {
+        const [source_account, destination_account] = await Promise.all([
+            businessRepository.getBusinessById(source_id),
+            businessRepository.getBusinessById(destination_id),
+        ]);
+
+        const isValidTransfer =
+            (source_account.company_id === destination_account.company_id &&
+                amount <= 10000) ||
+            (source_account.company_id !== destination_account.company_id &&
+                amount <= 1000);
+        if (!isValidTransfer) throw new BadRequest("Passed Transfer Limit");
+
+        const rate = await this.getRate(
+            source_account.currency,
+            destination_account.currency
+        );
+
+        const transaction = await accountService.transfer(
+            source_account,
+            destination_account,
+            amount,
+            amount * rate
+        );
+        return transaction;
+    }
+
+    private async getRate(base: string, currency: string) {
+        const base_url = `http://api.exchangeratesapi.io/latest`;
+        const url = `${base_url}?base=${base}&symbols=${currency}&access_key=64d433554d6a3822ea642ec99a851038`;
+
+        const response = await fetch(url);
+        const data = (await response.json()) as IExchangeRate;
+        if (!data.rates[currency])
+            throw new Error(`currency: ${currency} doesn't exist in results.`);
+
+        return data.rates[currency];
+    }
 
     formatAccount(business: IBusinessAccount) {
         const business_dto: IBusinessAccountDto = {

@@ -30,6 +30,29 @@ class AccountRepository {
         const account = await this.getAccountById(result.insertId);
         return account;
     }
+
+    async transfer(
+        source_account: IAccount,
+        destination_account: IAccount,
+        source_amount: number,
+        destination_amount: number
+    ) {
+        source_account.balance -= source_amount;
+        destination_account.balance += destination_amount;
+
+        const [withdraw_result] = (await db.query(
+            "UPDATE accounts SET balance = ? WHERE account_id = ?",
+            [source_account.balance, source_account.account_id]
+        )) as ResultSetHeader[];
+        if (!withdraw_result.affectedRows) return false;
+
+        const [deposit_result] = (await db.query(
+            "UPDATE accounts SET balance = ? WHERE account_id = ?",
+            [destination_account.balance, destination_account.account_id]
+        )) as ResultSetHeader[];
+
+        return !!deposit_result.affectedRows;
+    }
 }
 
 const accountRepository = new AccountRepository();

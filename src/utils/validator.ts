@@ -1,12 +1,9 @@
 import { BadRequest } from "../exceptions/badRequest.exception.js";
 import { BalanceTransfer, IAccount } from "../types/accounts.interface.js";
-
-interface IDynamicObject {
-    [key: string]: any;
-}
+import { IIndexable } from "../types/indexable.interface.js";
 
 class Validator {
-    required(obj: IDynamicObject, mandatory_keys: string[]) {
+    required(obj: IIndexable, mandatory_keys: string[]) {
         return mandatory_keys.every((key) => {
             if (!(key in obj)) {
                 throw new BadRequest(`the request is missing ${key} value`);
@@ -15,7 +12,7 @@ class Validator {
         });
     }
 
-    notExist(obj: IDynamicObject, mandatory_keys: string[]) {
+    notExist(obj: IIndexable, mandatory_keys: string[]) {
         return mandatory_keys.every((key) => {
             if (key in obj) {
                 throw new BadRequest(`the request is missing ${key} value`);
