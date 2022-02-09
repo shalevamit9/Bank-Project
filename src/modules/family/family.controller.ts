@@ -29,10 +29,10 @@ class FamilyController {
 
     //  /api/family/:id?details=full
     getFamilyById: RequestHandler = async (req, res) => {
-        const details_level = String(req.query.details) || "full";
+        // const details_level = String(req.query.details) || "full"; // move to service
         const family = await familyService.getFamilyById(
             Number(req.params.id),
-            details_level
+            String(req.query.details)
         );
 
         const response: ResponseMessage = {
