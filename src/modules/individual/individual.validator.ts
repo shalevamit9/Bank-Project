@@ -5,7 +5,7 @@ import { validationResultsHandler } from "../../utils/validation.utils.js";
 import { IValidationResult } from "../../types/validation.interface.js";
 
 class IndividualValidator {
-    createIndividual: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+    createIndividual: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
         const results: IValidationResult[] = [];
         const individual_dto : IIndividualAccountDto = req.body;
         const mandatory_keys = ["individual_id","first_name","last_name","currency"];
