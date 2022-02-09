@@ -38,7 +38,6 @@ class BusinessService
             business_account_ids
         );
         if (businesses.length === 0) return null;
-        console.log(businesses);
 
         return businesses.map((business) => this.formatAccount(business));
     }
