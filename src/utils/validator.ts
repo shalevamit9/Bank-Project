@@ -1,15 +1,12 @@
 import { BalanceTransfer, IAccount } from "../types/accounts.interface.js";
-
-interface IDynamicObject {
-    [key: string]: any;
-}
+import { IIndexable } from "../types/indexable.interface.js";
 
 class Validator {
-    required(obj: IDynamicObject, mandatory_keys: string[]) {
+    required(obj: IIndexable, mandatory_keys: string[]) {
         return mandatory_keys.every((key) => key in obj);
     }
 
-    notExist(obj: IDynamicObject, mandatory_keys: string[]) {
+    notExist(obj: IIndexable, mandatory_keys: string[]) {
         return mandatory_keys.every((key) => !(key in obj));
     }
 
@@ -30,19 +27,17 @@ class Validator {
     }
 
     isNumeric(value: unknown) {
-        return /^[0-9]+$/.test(String(value));
+        return /^-?[0-9]+$/.test(String(value));
     }
 
     length(length_to_validate: number, input: string) {
         return input.length === length_to_validate;
-        
     }
 
     isExist(accounts: IAccount[], amount: number) {
         return accounts.length === amount;
     }
 
-    // if need account property then use balance
     hasMinSum(min: number, amounts: number[]) {
         const result = amounts.reduce((sum: number, amount: number): number => {
             return sum + amount;

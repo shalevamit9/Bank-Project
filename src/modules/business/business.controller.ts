@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { BadRequest } from "../../exceptions/badRequest.exception.js";
+import { TransactionException } from "../../exceptions/transaction.exception.js";
 import { UrlNotFoundException } from "../../exceptions/urlNotFound.exception.js";
 import { ResponseMessage } from "../../types/messages.interface.js";
 import { ICreateBusinessDto } from "./business.interface.js";
@@ -44,7 +44,7 @@ class BusinessController {
             Number(destination_id),
             Number(amount)
         );
-        if (!transaction) throw new BadRequest("Passed Transfer Limit");
+        if (!transaction) throw new TransactionException();
 
         const response: ResponseMessage = {
             status: 201,
@@ -63,6 +63,7 @@ class BusinessController {
             Number(destination_id),
             amount as number
         );
+        if (!transaction) throw new TransactionException();
 
         const response: ResponseMessage = {
             status: 201,
@@ -76,7 +77,20 @@ class BusinessController {
     fxTransferToBusiness: RequestHandler = async (req, res) => {
         const { source_id, destination_id } = req.params;
         const { amount } = req.body;
-        const transaction = await businessService.fxTransferToBusiness;
+        const transaction = await businessService.fxTransferToBusiness(
+            Number(source_id),
+            Number(destination_id),
+            Number(amount)
+        );
+        if (!transaction) throw new TransactionException();
+
+        const response: ResponseMessage = {
+            status: 201,
+            message: "success",
+            data: { transaction },
+        };
+
+        res.status(response.status).json(response);
     };
 }
 
