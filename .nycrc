@@ -6,6 +6,16 @@
     "extension": [
         ".ts"
     ],
+    "exclude": [
+        "src/**/*.controller.ts",
+        "src/**/*.router.ts",
+        "src/**/*.interface.ts",
+        "src/exceptions",
+        "src/app.ts",
+        "src/index.ts",
+        "src/config.ts",
+        "src/db"
+    ],
     "reporter": [
         "text",
         "html"

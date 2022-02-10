@@ -147,6 +147,7 @@ class BusinessService
             amount,
             amount * rate
         );
+        if (transaction) transaction.fx_rate = rate;
         return transaction;
     }
 
