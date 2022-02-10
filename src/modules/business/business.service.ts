@@ -67,9 +67,7 @@ class BusinessService
             account_id: account.account_id,
         });
 
-        const business_dto: IBusinessAccountDto = { ...business };
-        if (address) business_dto.address = address;
-
+        const business_dto = this.formatAccount(business);
         return business_dto;
     }
 
