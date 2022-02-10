@@ -7,6 +7,7 @@ import accountValidator from "../../utils/account.validator.js";
 import {
     AccountTypes,
     BalanceTransfer,
+    IAccount,
 } from "../../types/accounts.interface.js";
 import { TransferTuple } from "../../types/accounts.interface.js";
 import { ICreateFamily } from "./family.interface.js";
@@ -107,22 +108,25 @@ class FamilyValidator {
         next: NextFunction
     ) => {
         const results: IValidationResult[] = [];
-        const family_dto = familyService.getFamilyById(
+        const family_dto = await familyService.getFamilyById(
             Number(req.params.sourceId)
         );
-        const pending_users: Promise<IIndividualAccountDto>[] =
-            family_dto.owners.map(
-                async (owner) =>
-                    await individualRepository.getIndividualById(
-                        Number(owner[0])
-                    )
-            );
-        const users: IIndividualAccountDto[] = await Promise.all(pending_users);
-
+        // if  using getFamilyById-short
+        // const pending_users: Promise<IIndividualAccountDto>[] =
+        //     family_dto.owners.map(
+        //         async (owner) =>
+        //             await individualRepository.getIndividualById(
+        //                 Number(owner)
+        //             )
+        //     );
+        // const users: IIndividualAccountDto[] = await Promise.all(pending_users);
+        // if using getFamilyById-full
+        const users : IIndividualAccountDto[]= (family_dto.owners as IIndividualAccountDto[]).map(owner=> owner);
         results.push({
-            is_valid: validator.isExist(users, family_dto.owners.length),
+            is_valid: validator.isExist(users as IAccount[], users.length),
             message: "",
         });
+
         results.push({
             is_valid: accountValidator.isActive(users),
             message: "at least one of the family owners is not active",
@@ -154,6 +158,10 @@ class FamilyValidator {
                 [destination]
             ),
             message: "destination id is not type of business",
+        });
+        results.push({
+            is_valid: validator.isNumeric(req.body.amount),
+            message: "amount is not numeric",
         });
         results.push({
             is_valid: validator.isPositive(Number(req.body.amount)),
@@ -211,17 +219,21 @@ class FamilyValidator {
                 "at least one of the amount in the tuple is not a positive number",
         });
 
-        const family_dto: IFamilyAccountDto = familyService.getFamilyById(
+        
+        const family_dto: IFamilyAccountDto = await familyService.getFamilyById(
             Number(req.params.sourceId)
         );
-        const pending_users: Promise<IIndividualAccountDto>[] =
-            family_dto.owners.map(
-                async (owner) =>
-                    await individualRepository.getIndividualById(
-                        Number(owner[0])
-                    )
-            );
-        const users: IIndividualAccountDto[] = await Promise.all(pending_users);
+        // if  using getFamilyById-short
+        // const pending_users: Promise<IIndividualAccountDto>[] =
+        //     family_dto.owners.map(
+        //         async (owner) =>
+        //             await individualRepository.getIndividualById(
+        //                 Number(owner)
+        //             )
+        //     );
+        // const users: IIndividualAccountDto[] = await Promise.all(pending_users);
+        // if using getFamilyById-full
+        const users : IIndividualAccountDto[]= (family_dto.owners as IIndividualAccountDto[]).map(owner=> owner);
 
         results.push({
             is_valid: accountValidator.isSameCurrency(
@@ -248,16 +260,17 @@ class FamilyValidator {
         next();
     };
 
-    removeFamilyMembers: RequestHandler = (
+    removeFamilyMembers: RequestHandler = async (
         req: Request,
         res: Response,
         next: NextFunction
     ) => {
         const results: IValidationResult[] = [];
         const input_tup: TransferTuple[] = req.body.individual_accounts;
-        const family_dto: IFamilyAccountDto = familyService.getFamilyById(
+        const family_dto: IFamilyAccountDto = await familyService.getFamilyById(
             Number(req.params.sourceId)
         );
+        const owners : IIndividualAccountDto[] = family_dto.owners as IIndividualAccountDto[];
         results.push({
             is_valid: validator.isEmpty(input_tup),
             message: `array of id and amount tuple is empty`,
@@ -265,13 +278,13 @@ class FamilyValidator {
         results.push({
             is_valid: input_tup.every(
                 (id, amount) =>
-                    validator.isNumeric(id) && validator.isPositive(amount)
+                    validator.isNumeric(id) && validator.isNumeric(amount) && validator.isPositive(amount)
             ),
             message: `at least one of the amount in the tuple is not numeric or a positive amount`,
         });
         results.push({
-            is_valid: family_dto.owners.every((owner) => {
-                return input_tup.some((id) => id === owner.individual_id);
+            is_valid: input_tup.every((transfer)=> {
+                return owners.some((owner)=> owner.individual_account_id === transfer[0])
             }),
             message: `at least one of the id in the tuple is not matching a user`,
         });
