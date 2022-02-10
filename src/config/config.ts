@@ -13,6 +13,9 @@ interface IConfig {
     APP_SECRET: string;
     ACCESS_TOKEN_EXPIRATION: string;
     REFRESH_TOKEN_EXPIRATION: string;
+    INDIVIDUAL_MINIMUM_ALLOWED_BALANCE: number;
+    BUSINESS_MINIMUM_ALLOWED_BALANCE: number;
+    FAMILY_MINIMUM_ALLOWED_BALANCE: number;
 }
 
 const config: IConfig = JSON.parse(

@@ -16,8 +16,11 @@ import { IBusinessAccount } from "../business/business.interface.js";
 import { validationResultsHandler } from "../../utils/validation.utils.js";
 import { IValidationResult } from "../../types/validation.interface.js";
 import individualRepository from "../individual/individual.repository.js";
+import config from "../../config/config.js";
 
 class FamilyValidator {
+    family_minimum_allowed_balance : number = config.FAMILY_MINIMUM_ALLOWED_BALANCE;
+
     createFamily: RequestHandler = async (
         req: Request,
         res: Response,
@@ -65,7 +68,7 @@ class FamilyValidator {
         });
         results.push({
             is_valid: validator.hasMinSum(
-                5000,
+                this.family_minimum_allowed_balance,
                 family_dto.owners.map((owner) => owner[1])
             ),
             message:
@@ -175,13 +178,13 @@ class FamilyValidator {
                 "the business id doesn't have the same currency as the family",
         });
         results.push({
-            is_valid: validator.hasMinimalRemainingBalance(5000, [
+            is_valid: validator.hasMinimalRemainingBalance(this.family_minimum_allowed_balance, [
                 [Number(family_dto.balance), Number(req.body.amount)],
             ]),
             message: "family is not allow to transfer this amount",
         });
         results.push({
-            is_valid: validator.isLessThan(5000, Number(req.body.amount)),
+            is_valid: validator.isLessThan(this.family_minimum_allowed_balance, Number(req.body.amount)),
             message:
                 "the maximum amount that family can transfer at once is 5,000",
         });

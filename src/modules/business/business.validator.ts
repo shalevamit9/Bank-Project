@@ -7,8 +7,11 @@ import { AccountTypes } from "../../types/accounts.interface.js";
 import { IValidationResult } from "../../types/validation.interface.js";
 import { validationResultsHandler } from "../../utils/validation.utils.js";
 import individualRepository from "../individual/individual.repository.js";
+import config from "../../config/config.js";
 
 class BusinessValidator {
+    business_minimum_allowed_balance : number = config.BUSINESS_MINIMUM_ALLOWED_BALANCE;
+
     createBusiness: RequestHandler = (
         req: Request,
         res: Response,
@@ -107,7 +110,7 @@ class BusinessValidator {
             message: "amount is not positive",
         });
         results.push({
-            is_valid: validator.hasMinimalRemainingBalance(10000, [
+            is_valid: validator.hasMinimalRemainingBalance(this.business_minimum_allowed_balance, [
                 [source_account.balance, amount],
             ]),
             message: "source account doesn't have enough remaining balance",
@@ -165,7 +168,7 @@ class BusinessValidator {
             message: "amount is not positive",
         });
         results.push({
-            is_valid: validator.hasMinimalRemainingBalance(10000, [
+            is_valid: validator.hasMinimalRemainingBalance(this.business_minimum_allowed_balance, [
                 [source_account.balance, amount],
             ]),
             message: "source account doesn't have enough remaining balance",
@@ -216,7 +219,7 @@ class BusinessValidator {
             message: "amount is not positive",
         });
         results.push({
-            is_valid: validator.hasMinimalRemainingBalance(10000, [
+            is_valid: validator.hasMinimalRemainingBalance(this.business_minimum_allowed_balance, [
                 [source_account.balance, amount],
             ]),
             message: "source account doesn't have enough remaining balance",
