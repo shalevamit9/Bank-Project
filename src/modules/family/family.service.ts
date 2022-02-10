@@ -14,27 +14,27 @@ import familyRepository from "./family.repository.js";
 
 class FamilyService {
     async createFamilyAccount(family_data: ICreateFamily) {
-        const { currency } = family_data;
+        // const { currency } = family_data;
 
-        const account_data: ICreateAccount = {
-            currency,
-            balance: 0,
-            status: AccountStatuses.Active,
-            type: AccountTypes.Family,
-        };
+        // const account_data: ICreateAccount = {
+        //     currency,
+        //     balance: 0,
+        //     status: AccountStatuses.Active,
+        //     type: AccountTypes.Family,
+        // };
 
-        const new_family_id = await familyRepository.createFamilyAccount(
-            family_data,
-            account_data
-        );
+        // const new_family_id = await familyRepository.createFamilyAccount(
+        //     family_data,
+        //     account_data
+        // );
 
-        const family = await this.addFamilyMembers(
-            new_family_id,
-            family_data.owners,
-            "full"
-        );
+        // const family = await this.addFamilyMembers(
+        //     new_family_id,
+        //     family_data.owners,
+        //     "full"
+        // );
 
-        return family;
+        // return family;
     }
 
     async getFamilyById(family_id: number, details_level = "full") {
@@ -64,9 +64,9 @@ class FamilyService {
         accounts_to_add: TransferTuple[],
         details_level: string
     ) {
-        // const amounts_arr = accounts_to_add.map((account) => account[1]);
+        const amounts_arr = accounts_to_add.map((account) => account[1]);
 
-        // use one reduce
+        //use one reduce
         const amount_to_add = amounts_arr.reduce(
             (amount, total_amount) => amount + total_amount
         );
