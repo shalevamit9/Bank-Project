@@ -36,11 +36,11 @@ class FamilyRouter {
             raw(familyController.closeFamilyAccount)
         );
 
-        // // transfer from a family account to a business account having the same currency
-        // this.router.post(
-        //     "/transfer/:source_id/business/:destination_id",
-        //     raw(familyController.transferToBusiness)
-        // ); // input: srcId, destId, a list of tuples (individual account ID, amount), amount to transfer
+        // transfer from a family account to a business account having the same currency
+        this.router.post(
+            "/transfer/:source_id/business/:destination_id",
+            raw(familyController.transferToBusiness)
+        );
     }
 }
 

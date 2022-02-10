@@ -7,6 +7,7 @@ import accountValidator from "../../utils/account.validator.js";
 import {
     AccountTypes,
     BalanceTransfer,
+    IAccount,
 } from "../../types/accounts.interface.js";
 import { TransferTuple } from "../../types/accounts.interface.js";
 import { ICreateFamily } from "./family.interface.js";
@@ -15,7 +16,6 @@ import { IBusinessAccount } from "../business/business.interface.js";
 import { validationResultsHandler } from "../../utils/validation.utils.js";
 import { IValidationResult } from "../../types/validation.interface.js";
 import individualRepository from "../individual/individual.repository.js";
-
 class FamilyValidator {
     createFamily: RequestHandler = async (
         req: Request,
@@ -32,7 +32,6 @@ class FamilyValidator {
             is_valid: validator.notExist(family_dto, ["family_account_id"]),
             message: "family_account_id is not belong to the input property",
         });
-
         const pending_users = family_dto.owners.map(
             async (owner) =>
                 await individualRepository.getIndividualById(Number(owner[0]))
@@ -70,17 +69,13 @@ class FamilyValidator {
             message:
                 "the sum of all the users amount is less then 5,000 therefore not enougth",
         });
-
         const balance_tuples: BalanceTransfer[] = users.map((user, i) => [
             user.balance,
             family_dto.owners[i][1],
         ]);
-
         validator.hasMinimalRemainingBalance(1000, balance_tuples);
-
         next();
     };
-
     getFamily: RequestHandler = (
         req: Request,
         res: Response,
@@ -95,32 +90,31 @@ class FamilyValidator {
             is_valid: validator.isNumeric(req.params.id),
             message: `individual_id is not numeric`,
         });
-
         validationResultsHandler(results);
-
         next();
     };
-
     transferToBusiness: RequestHandler = async (
         req: Request,
         res: Response,
         next: NextFunction
     ) => {
         const results: IValidationResult[] = [];
-        const family_dto = familyService.getFamilyById(
+        const family_dto = await familyService.getFamilyById(
             Number(req.params.sourceId)
         );
-        const pending_users: Promise<IIndividualAccountDto>[] =
-            family_dto.owners.map(
-                async (owner) =>
-                    await individualRepository.getIndividualById(
-                        Number(owner[0])
-                    )
-            );
-        const users: IIndividualAccountDto[] = await Promise.all(pending_users);
-
+        // if  using getFamilyById-short
+        // const pending_users: Promise<IIndividualAccountDto>[] =
+        //     family_dto.owners.map(
+        //         async (owner) =>
+        //             await individualRepository.getIndividualById(
+        //                 Number(owner)
+        //             )
+        //     );
+        // const users: IIndividualAccountDto[] = await Promise.all(pending_users);
+        // if using getFamilyById-full
+        const users : IIndividualAccountDto[]= (family_dto.owners as IIndividualAccountDto[]).map(owner=> owner);
         results.push({
-            is_valid: validator.isExist(users, family_dto.owners.length),
+            is_valid: validator.isExist(users as IAccount[], users.length),
             message: "",
         });
         results.push({
@@ -142,18 +136,20 @@ class FamilyValidator {
             message:
                 "at least one user in the list of users is not type of individual",
         });
-
         const destination: IBusinessAccount =
             await businessRepository.getBusinessById(
                 Number(req.params.destinationId)
             );
-
         results.push({
             is_valid: accountValidator.isTypeOf(
                 [AccountTypes.Business],
                 [destination]
             ),
             message: "destination id is not type of business",
+        });
+        results.push({
+            is_valid: validator.isNumeric(req.body.amount),
+            message: "amount is not numeric",
         });
         results.push({
             is_valid: validator.isPositive(Number(req.body.amount)),
@@ -177,12 +173,9 @@ class FamilyValidator {
             message:
                 "the maximum amount that family can transfer at once is 5,000",
         });
-
         validationResultsHandler(results);
-
         next();
     };
-
     addFamilyMembers: RequestHandler = async (
         req: Request,
         res: Response,
@@ -190,7 +183,6 @@ class FamilyValidator {
     ) => {
         const results: IValidationResult[] = [];
         const input_tup: TransferTuple[] = req.body.individual_accounts;
-
         results.push({
             is_valid: validator.required(req.params, ["id"]),
             message: "id property is missing",
@@ -210,19 +202,20 @@ class FamilyValidator {
             message:
                 "at least one of the amount in the tuple is not a positive number",
         });
-
-        const family_dto: IFamilyAccountDto = familyService.getFamilyById(
+        const family_dto: IFamilyAccountDto = await familyService.getFamilyById(
             Number(req.params.sourceId)
         );
-        const pending_users: Promise<IIndividualAccountDto>[] =
-            family_dto.owners.map(
-                async (owner) =>
-                    await individualRepository.getIndividualById(
-                        Number(owner[0])
-                    )
-            );
-        const users: IIndividualAccountDto[] = await Promise.all(pending_users);
-
+        // if  using getFamilyById-short
+        // const pending_users: Promise<IIndividualAccountDto>[] =
+        //     family_dto.owners.map(
+        //         async (owner) =>
+        //             await individualRepository.getIndividualById(
+        //                 Number(owner)
+        //             )
+        //     );
+        // const users: IIndividualAccountDto[] = await Promise.all(pending_users);
+        // if using getFamilyById-full
+        const users : IIndividualAccountDto[]= (family_dto.owners as IIndividualAccountDto[]).map(owner=> owner);
         results.push({
             is_valid: accountValidator.isSameCurrency(
                 family_dto.currency,
@@ -242,22 +235,20 @@ class FamilyValidator {
             is_valid: accountValidator.isActive(users),
             message: "at least one of the users is not active",
         });
-
         validationResultsHandler(results);
-
         next();
     };
-
-    removeFamilyMembers: RequestHandler = (
+    removeFamilyMembers: RequestHandler = async (
         req: Request,
         res: Response,
         next: NextFunction
     ) => {
         const results: IValidationResult[] = [];
         const input_tup: TransferTuple[] = req.body.individual_accounts;
-        const family_dto: IFamilyAccountDto = familyService.getFamilyById(
+        const family_dto: IFamilyAccountDto = await familyService.getFamilyById(
             Number(req.params.sourceId)
         );
+        const owners : IIndividualAccountDto[] = family_dto.owners as IIndividualAccountDto[];
         results.push({
             is_valid: validator.isEmpty(input_tup),
             message: `array of id and amount tuple is empty`,
@@ -265,22 +256,19 @@ class FamilyValidator {
         results.push({
             is_valid: input_tup.every(
                 (id, amount) =>
-                    validator.isNumeric(id) && validator.isPositive(amount)
+                    validator.isNumeric(id) && validator.isNumeric(amount) && validator.isPositive(amount)
             ),
             message: `at least one of the amount in the tuple is not numeric or a positive amount`,
         });
         results.push({
-            is_valid: family_dto.owners.every((owner) => {
-                return input_tup.some((id) => id === owner.individual_id);
+            is_valid: input_tup.every((transfer)=> {
+                return owners.some((owner)=> owner.individual_account_id === transfer[0])
             }),
             message: `at least one of the id in the tuple is not matching a user`,
         });
-
         validationResultsHandler(results);
-
         next();
     };
-
     closeFamilyAccount: RequestHandler = (
         req: Request,
         res: Response,
@@ -295,13 +283,9 @@ class FamilyValidator {
             is_valid: validator.isNumeric(req.params.id),
             message: `individual_id is not numeric`,
         });
-
         validationResultsHandler(results);
-
         next();
     };
 }
-
 const familyValidator = new FamilyValidator();
-
 export default familyValidator;

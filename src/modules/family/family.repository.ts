@@ -2,7 +2,8 @@
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { db } from "../../db/mysql.connection.js";
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
-import { TransferTuple, IAccount } from "../../types/accounts.interface.js";
+import { TransferTuple } from "../../types/accounts.interface.js";
+// import { IBusinessAccount } from "../business/business.interface.js";
 import {
     IIndividualAccount,
     IIndividualAccountDto,
@@ -10,7 +11,6 @@ import {
 import {
     IFamilyAccountDto,
     ICreateFamily,
-    IFamilyAccountDB,
 } from "./family.interface.js";
 
 class FamilyRepository {
@@ -23,7 +23,7 @@ class FamilyRepository {
 
         const [family] = (await db.query(get_family)) as RowDataPacket[][];
 
-        return family[0] as IFamilyAccountDB;
+        return family[0] as IFamilyAccountDto;  // !!!! was IFamilyAccountDB
     }
 
     async getFamilyOwnersIds(family_id: number) {
@@ -39,7 +39,7 @@ class FamilyRepository {
         type IndividualId = Pick<
             IIndividualAccountDto,
             "individual_account_id"
-        >; // maybe export to another module
+        >;
         const owners_ids = owners.map(
             (owner) => (owner as IndividualId).individual_account_id
         );
@@ -51,7 +51,7 @@ class FamilyRepository {
         const family = await this.getFamilyById(family_id);
         family["owners"] = await this.getFamilyOwnersIds(family_id);
 
-        return family as IFamilyAccountDto;
+        return family; // as IFamilyAccountDto;
     }
 
     async getFullFamilyDetails(family_id: number) {
@@ -115,20 +115,17 @@ class FamilyRepository {
         }
     }
 
-    async createFamilyAccount(
-        family_data: ICreateFamily,
-        account_data: Omit<IAccount, "account_id">
-    ) {
+    async createFamilyAccount(family_data: ICreateFamily, account_id: number) {
         const { context } = family_data;
 
-        const [new_account] = (await db.query(
-            "INSERT INTO accounts SET ?;",
-            account_data
-        )) as ResultSetHeader[];
+        // const [new_account] = (await db.query(
+        //     "INSERT INTO accounts SET ?;",
+        //     account_data
+        // )) as ResultSetHeader[];
 
         const family_account_data = {
             context,
-            account_id: new_account.insertId,
+            account_id,
         };
 
         const [new_family_account] = (await db.query(
@@ -206,14 +203,6 @@ class FamilyRepository {
     }
 
     async closeFamilyAccount(family_id: number) {
-        const family_to_close = await this.getShortFamilyDetails(family_id);
-
-        if ((family_to_close.owners as number[]).length > 0) {
-            throw new BadRequest(
-                "can't close family account because there are still owners left"
-            );
-        }
-
         const deactivate_account = `UPDATE accounts
             INNER JOIN family_accounts ON accounts.account_id = family_accounts.account_id
             SET accounts.status = 0
@@ -223,6 +212,7 @@ class FamilyRepository {
             deactivate_account,
             family_id
         )) as ResultSetHeader[];
+
         return !!result.affectedRows;
     }
 
@@ -249,6 +239,29 @@ class FamilyRepository {
     //    // return individual_account_ids.every((id) => owners_ids.includes(id));
 
     //     return true;
+    // }
+
+    // // probably unnecessary (transfer)
+    // async transferToBusiness(
+    //     source_account: IFamilyAccount,
+    //     destination_account: IBusinessAccount,
+    //     transfer_amount: number
+    // ) {
+    //     source_account.balance -= transfer_amount;
+    //     destination_account.balance += transfer_amount;
+
+
+    //     const update_account_balance = `UPDATE accounts 
+    //     SET balance = ? 
+    //     WHERE account_id = ?`;
+
+    //     const [source_balance_update] = (await db.query(update_account_balance, [source_account.balance, source_account.account_id])) as ResultSetHeader[];
+
+    //     if(!source_balance_update.affectedRows) return false;
+
+    //     const [destination_balance_update] = (await db.query(update_account_balance, [source_account.balance, source_account.account_id])) as ResultSetHeader[];
+
+    //     return !!destination_balance_update.affectedRows;
     // }
 }
 
