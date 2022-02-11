@@ -1,4 +1,5 @@
-import { IAccount } from "../../types/accounts.interface.js";
+import { BadRequest } from "../../exceptions/badRequest.exception.js";
+import { AccountStatuses, IAccount } from "../../types/accounts.interface.js";
 import { ICreateAccount } from "./account.interface.js";
 import accountRepository from "./account.repository.js";
 
@@ -41,8 +42,24 @@ class AccountService {
         };
     }
 
-    async changeAccountStatus() {
+    async changeAccountsStatuses(accounts_ids: number[], action: string) {
+        const status =
+            action === "activate"
+                ? AccountStatuses.Active
+                : AccountStatuses.Inactive;
+        const status_changed = await accountRepository.changeAccountsStatuses(
+            accounts_ids,
+            status
+        );
 
+        if (!status_changed) {
+            throw new BadRequest("Failed to change status");
+        }
+
+        return {
+            accounts_ids,
+            status: status === AccountStatuses.Active ? "Active" : "Inactive",
+        };
     }
 }
 

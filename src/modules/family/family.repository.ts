@@ -1,14 +1,13 @@
 /* eslint-disable class-methods-use-this */
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { db } from "../../db/mysql.connection.js";
-import { BadRequest } from "../../exceptions/badRequest.exception.js";
 import { TransferTuple } from "../../types/accounts.interface.js";
-// import { IBusinessAccount } from "../business/business.interface.js";
+import { BadRequest } from "../../exceptions/badRequest.exception.js";
+import { IFamilyAccountDto, ICreateFamily } from "./family.interface.js";
 import {
     IIndividualAccount,
     IIndividualAccountDto,
 } from "../individual/individual.interface.js";
-import { IFamilyAccountDto, ICreateFamily } from "./family.interface.js";
 
 class FamilyRepository {
     async getFamilyById(family_id: number) {
@@ -51,9 +50,7 @@ class FamilyRepository {
             family["owners"] = await this.getFamilyOwnersIds(family_id);
         }
 
-        // family["owners"] = await this.getFamilyOwnersIds(family_id);
-
-        return family; // as IFamilyAccountDto;
+        return family;
     }
 
     async getFullFamilyDetails(family_id: number) {
@@ -209,6 +206,14 @@ class FamilyRepository {
 
         return !!result.affectedRows;
     }
+
+    // async getIndividualsAssignedToFamilies() {
+    //     // we receive tuples: acount_id, status, type
+    //     // get from DB individual_account_id (matching to the account_id)
+    //     // get from DB the families that the individual is assigned to
+    //     // check if any other accounts are from the same family
+    //     // remove accounts from families
+    // }
 }
 
 const familyRepository = new FamilyRepository();
