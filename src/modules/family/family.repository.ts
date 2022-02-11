@@ -8,10 +8,7 @@ import {
     IIndividualAccount,
     IIndividualAccountDto,
 } from "../individual/individual.interface.js";
-import {
-    IFamilyAccountDto,
-    ICreateFamily,
-} from "./family.interface.js";
+import { IFamilyAccountDto, ICreateFamily } from "./family.interface.js";
 
 class FamilyRepository {
     async getFamilyById(family_id: number) {
@@ -23,7 +20,7 @@ class FamilyRepository {
 
         const [family] = (await db.query(get_family)) as RowDataPacket[][];
 
-        return family[0] as IFamilyAccountDto;  // !!!! was IFamilyAccountDB
+        return family[0] as IFamilyAccountDto; // !!!! was IFamilyAccountDB
     }
 
     async getFamilyOwnersIds(family_id: number) {
@@ -118,11 +115,6 @@ class FamilyRepository {
     async createFamilyAccount(family_data: ICreateFamily, account_id: number) {
         const { context } = family_data;
 
-        // const [new_account] = (await db.query(
-        //     "INSERT INTO accounts SET ?;",
-        //     account_data
-        // )) as ResultSetHeader[];
-
         const family_account_data = {
             context,
             account_id,
@@ -157,13 +149,10 @@ class FamilyRepository {
             const owners_left_after_removal =
                 (result[0].owners_count as number) - accounts_to_remove.length;
 
-            /*  
-            Make sure there is a minimal amount left in the account (if there are any owners left after the removal)
-            BEFORE deleting from the DB !!!
-            */
             if (
-                owners_left_after_removal > 0 &&
-                current_balance - amount_to_remove < 5000
+                current_balance - amount_to_remove < 0 ||
+                (owners_left_after_removal > 0 &&
+                    current_balance - amount_to_remove < 5000) // define constant
             ) {
                 throw new BadRequest(
                     "can't remove family members! remaining balance is invalid."
@@ -215,54 +204,6 @@ class FamilyRepository {
 
         return !!result.affectedRows;
     }
-
-    // async isInFamily(family_id: number, individual_account_ids: number[]) {
-    //     // const family = await this.getFamilyById(family_id);
-    //     const getFamilyOwners = `SELECT family_individuals.individual_account_id
-    //          FROM family_accounts INNER JOIN family_individuals
-    //          ON family_accounts.family_account_id = family_individuals.family_account_id
-    //          WHERE family_accounts.family_account_id = ${family_id};`;
-
-    //     const [result] = (await db.query(getFamilyOwners)) as RowDataPacket[][]; // RowDataPacket[][] ??
-
-    //     const owners_ids = result as number[]; // result[0] ??
-
-    //     // const owners_ids = family.owners.map((owner) => owner.account_id);
-
-    //     for (const individual_account_id of individual_account_ids) {
-    //         if (!owners_ids.includes(individual_account_id)) {
-    //             return false;
-    //             // throw new Error(`account ${individual_account_id} doesn't belong to this family account`);
-    //         }
-    //     }
-
-    //    // return individual_account_ids.every((id) => owners_ids.includes(id));
-
-    //     return true;
-    // }
-
-    // // probably unnecessary (transfer)
-    // async transferToBusiness(
-    //     source_account: IFamilyAccount,
-    //     destination_account: IBusinessAccount,
-    //     transfer_amount: number
-    // ) {
-    //     source_account.balance -= transfer_amount;
-    //     destination_account.balance += transfer_amount;
-
-
-    //     const update_account_balance = `UPDATE accounts 
-    //     SET balance = ? 
-    //     WHERE account_id = ?`;
-
-    //     const [source_balance_update] = (await db.query(update_account_balance, [source_account.balance, source_account.account_id])) as ResultSetHeader[];
-
-    //     if(!source_balance_update.affectedRows) return false;
-
-    //     const [destination_balance_update] = (await db.query(update_account_balance, [source_account.balance, source_account.account_id])) as ResultSetHeader[];
-
-    //     return !!destination_balance_update.affectedRows;
-    // }
 }
 
 const familyRepository = new FamilyRepository();

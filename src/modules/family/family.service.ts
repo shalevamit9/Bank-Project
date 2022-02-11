@@ -68,16 +68,9 @@ class FamilyService {
         accounts_to_add: TransferTuple[],
         details_level = "full"
     ) {
-        // const amounts_arr = accounts_to_add.map((account) => account[1]);
-
-        // // use one reduce
-        // const amount_to_add = amounts_arr.reduce(
-        //     (total_amount, amount) => amount + total_amount
-        // );
-
         const amount_to_add = accounts_to_add
             .map((account) => account[1])
-            .reduce((total_amount, amount) => amount + total_amount);
+            .reduce((total_amount, amount) => amount + total_amount, 0);
 
         await familyRepository.addMembersToFamily(
             family_id,
@@ -98,16 +91,9 @@ class FamilyService {
         accounts_to_remove: TransferTuple[],
         details_level = "full"
     ) {
-        // const amounts_arr = accounts_to_remove.map((account) => account[1]);
-
-        // // use one reduce
-        // const amount_to_remove = amounts_arr.reduce(
-        //     (amount, total_amount) => amount + total_amount
-        // );
-
         const amount_to_remove = accounts_to_remove
             .map((account) => account[1])
-            .reduce((total_amount, amount) => amount + total_amount);
+            .reduce((total_amount, amount) => amount + total_amount, 0);
 
         await familyRepository.removeMembersFromFamily(
             family_id,
@@ -165,21 +151,6 @@ class FamilyService {
 
         return transfer_result;
     }
-
-    // formatAccount(family: IFamilyAccount): IFamilyAccountDto {
-    //     const family_dto: IFamilyAccountDto = {
-    //         account_id: family.account_id,
-    //         currency: family.currency,
-    //         balance: family.balance,
-    //         type: family.type, // "Individual" | "Business" | "Family";
-    //         status: family.status, // 0 | 1;
-    //         family_account_id: family.family_account_id,
-    //         context: family.context, // (travel / morgage / emergency / savings / checking) --> free text
-    //         owners: {}, // ???
-    //     };
-
-    //     return family_dto;
-    // }
 }
 
 const family_service = new FamilyService();
