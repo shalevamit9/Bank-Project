@@ -1,7 +1,8 @@
 import { Request, Response, RequestHandler, NextFunction } from "express";
-import { db } from "../db/mysql.connection.js";
 import { RowDataPacket } from "mysql2";
 import crypto from "crypto";
+import { UnauthorizedException } from "../exceptions/unauthorized.exception.js";
+import { db } from "../db/mysql.connection.js";
 
 interface IMerchant {
     merchant_id: number;
@@ -32,10 +33,7 @@ class Authentication {
             .digest("hex");
 
         if (hash !== secret_key_hash) {
-            console.log(
-                `our hash: ${hash} \n the hash we got: ${secret_key_hash}`
-            );
-            throw new Error("hashing went wrong");
+            throw new UnauthorizedException();
         }
 
         next();
