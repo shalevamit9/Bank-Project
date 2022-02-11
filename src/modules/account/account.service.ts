@@ -40,6 +40,10 @@ class AccountService {
             },
         };
     }
+
+    async changeAccountStatus() {
+
+    }
 }
 
 const accountService = new AccountService();

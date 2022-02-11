@@ -44,6 +44,10 @@ class FamilyService {
     async getFamilyById(family_id: number, details_level = "full") {
         const family = await familyRepository.getShortFamilyDetails(family_id);
 
+        if(!family) {
+            throw new BadRequest("Account doesn't exist");
+        }
+
         if (
             details_level === "short" ||
             (family.owners as number[]).length === 0

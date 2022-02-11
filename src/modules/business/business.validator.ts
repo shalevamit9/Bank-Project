@@ -74,7 +74,7 @@ class BusinessValidator {
         ]);
 
         results.push({
-            is_valid: validator.isExist(accounts, 2),
+            is_valid: validator.isExist(accounts),
             message: "At least one account doesn't exist",
         });
         const [source_account, destination_account] = accounts;
@@ -131,7 +131,7 @@ class BusinessValidator {
         ]);
 
         results.push({
-            is_valid: validator.isExist(accounts, 2),
+            is_valid: validator.isExist(accounts),
             message: "At least one account doesn't exist",
         });
         const [source_account, destination_account] = accounts;
@@ -189,7 +189,7 @@ class BusinessValidator {
         ]);
 
         results.push({
-            is_valid: validator.isExist(accounts, 2),
+            is_valid: validator.isExist(accounts),
             message: "At least one account doesn't exist",
         });
         const [source_account] = accounts;
