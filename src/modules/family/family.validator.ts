@@ -4,6 +4,11 @@ import familyService from "./family.service.js";
 import { IFamilyAccountDto } from "./family.interface.js";
 import { IIndividualAccountDto } from "../individual/individual.interface.js";
 import accountValidator from "../../utils/account.validator.js";
+import {
+    AccountTypes,
+    BalanceTransfer,
+    IAccount,
+} from "../../types/accounts.interface.js";
 import { TransferTuple } from "../../types/accounts.interface.js";
 import { ICreateFamily } from "./family.interface.js";
 import businessRepository from "../business/business.repository.js";
@@ -11,16 +16,17 @@ import { IBusinessAccount } from "../business/business.interface.js";
 import { validationResultsHandler } from "../../utils/validation.utils.js";
 import { IValidationResult } from "../../types/validation.interface.js";
 import individualRepository from "../individual/individual.repository.js";
-import {
-    AccountTypes,
-    BalanceTransfer,
-    IAccount,
-} from "../../types/accounts.interface.js";
-import businessService from "../business/business.service.js";
-import { log } from "console";
+import config from "../../config/config.js";
 
 class FamilyValidator {
-    createFamily: RequestHandler = async (req, res, next) => {
+    family_minimum_allowed_balance: number =
+        config.FAMILY_MINIMUM_ALLOWED_BALANCE;
+
+    createFamily: RequestHandler = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
         const results: IValidationResult[] = [];
         const family_dto: ICreateFamily = req.body;
 
@@ -66,7 +72,7 @@ class FamilyValidator {
         });
         results.push({
             is_valid: validator.hasMinSum(
-                5000, // define constant
+                this.family_minimum_allowed_balance,
                 family_dto.owners.map((owner) => owner[1])
             ),
             message:
@@ -104,6 +110,7 @@ class FamilyValidator {
             is_valid: validator.required(req.params, ["id"]),
             message: "id property is missing",
         });
+
         results.push({
             is_valid: validator.isEmpty(accounts_tuples),
             message: "individual accounts list is empty",
@@ -152,7 +159,7 @@ class FamilyValidator {
             message: "at least one of the users is not active",
         });
 
-        validationResultsHandler(results);  // CRASHES HERE, ERROR: LIST IS EMPTY
+        validationResultsHandler(results); // CRASHES HERE, ERROR: LIST IS EMPTY
 
         next();
     };
@@ -163,9 +170,9 @@ class FamilyValidator {
         const family_dto = await familyService.getFamilyById(
             Number(req.params.id)
         );
-            console.log("Tuples in valiator: ", accounts_tuples);
-            console.log("Tuples[].length = ", accounts_tuples.length);
-            console.log("is empty? ", validator.isEmpty(accounts_tuples));
+        console.log("Tuples in valiator: ", accounts_tuples);
+        console.log("Tuples[].length = ", accounts_tuples.length);
+        console.log("is empty? ", validator.isEmpty(accounts_tuples));
 
         const owners = family_dto.owners as IIndividualAccountDto[];
 
@@ -183,7 +190,13 @@ class FamilyValidator {
             ),
             message: `accounts IDs and amounts should be numeric and positive`,
         });
-
+        results.push({
+            is_valid: validator.hasMinimalRemainingBalance(
+                this.family_minimum_allowed_balance,
+                [[Number(family_dto.balance), Number(req.body.amount)]]
+            ),
+            message: "family is not allow to transfer this amount",
+        });
         results.push({
             is_valid: accounts_tuples.every((account) => {
                 return owners.some(
@@ -191,6 +204,14 @@ class FamilyValidator {
                 );
             }),
             message: `all individual accounts must be assigned to the family`,
+        });
+        results.push({
+            is_valid: validator.isLessThan(
+                this.family_minimum_allowed_balance,
+                Number(req.body.amount)
+            ),
+            message:
+                "the maximum amount that family can transfer at once is 5,000",
         });
 
         validationResultsHandler(results);
@@ -257,7 +278,6 @@ class FamilyValidator {
         const destination_account = await businessRepository.getBusinessById(
             Number(req.params.destination_id)
         );
-
         results.push({
             is_valid: accountValidator.isTypeOf(
                 [AccountTypes.Business],
@@ -282,6 +302,23 @@ class FamilyValidator {
             ]),
             message:
                 "the business account and family account don't have the same currency",
+        });
+        results.push({
+            is_valid: input_tup.every(
+                (id, amount) =>
+                    validator.isNumeric(id) &&
+                    validator.isNumeric(amount) &&
+                    validator.isPositive(amount)
+            ),
+            message: `at least one of the amount in the tuple is not numeric or a positive amount`,
+        });
+        results.push({
+            is_valid: input_tup.every((transfer) => {
+                return owners.some(
+                    (owner) => owner.individual_account_id === transfer[0]
+                );
+            }),
+            message: `at least one of the id in the tuple is not matching a user`,
         });
         results.push({
             // define constant

@@ -3,8 +3,11 @@ import validator from "../../utils/validator.js";
 import { IIndividualAccountDto } from "./individual.interface.js";
 import { validationResultsHandler } from "../../utils/validation.utils.js";
 import { IValidationResult } from "../../types/validation.interface.js";
+import config from "../../config/config.js";
 
 class IndividualValidator {
+    individual_minimum_allowed_balance : number = config.INDIVIDUAL_MINIMUM_ALLOWED_BALANCE;
+
     createIndividual: RequestHandler = (
         req: Request,
         res: Response,
