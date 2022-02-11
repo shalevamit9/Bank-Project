@@ -1,5 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { RequestHandler } from "express";
+import { BadRequest } from "../../exceptions/badRequest.exception.js";
+import { TransactionException } from "../../exceptions/transaction.exception.js";
 import {
     // ErrorMessage,
     ResponseMessage,
@@ -29,7 +31,6 @@ class FamilyController {
 
     //  /api/family/:id?details=full
     getFamilyById: RequestHandler = async (req, res) => {
-        // const details_level = String(req.query.details) || "full"; // move to service
         const family = await familyService.getFamilyById(
             Number(req.params.id),
             String(req.query.details)
@@ -45,13 +46,13 @@ class FamilyController {
     };
 
     addFamilyMembers: RequestHandler = async (req, res) => {
-        const details_level = String(req.query.details) || "full";
+
         const accounts_to_add: IUpdateMembers = req.body; // tuples [primaryID, amount]
 
         const family = await familyService.addFamilyMembers(
             Number(req.params.id),
             accounts_to_add.individual_accounts,
-            details_level
+            String(req.query.details)
         );
 
         const response: ResponseMessage = {
@@ -63,13 +64,11 @@ class FamilyController {
     };
 
     removeFamilyMembers: RequestHandler = async (req, res) => {
-        const details_level = String(req.query.details) || "full";
-
         const accounts_to_remove: IUpdateMembers = req.body; // list of tuples [primaryID, amount to take from the family account]
         const family = await familyService.removeFamilyMembers(
             Number(req.params.id),
             accounts_to_remove.individual_accounts,
-            details_level
+            String(req.query.details)
         );
 
         const response: ResponseMessage = {
@@ -81,30 +80,45 @@ class FamilyController {
     };
 
     closeFamilyAccount: RequestHandler = async (req, res) => {
-        await familyService.closeFamilyAccount(Number(req.params.id));
+        const isClosed = await familyService.closeFamilyAccount(
+            Number(req.params.id)
+        );
+
+        if (!isClosed) throw new BadRequest("Cannot close family account");
 
         const response: ResponseMessage = {
             status: 200,
             message: "success",
         };
+
         res.status(response.status).json(response);
     };
 
-    // transferToBusiness: RequestHandler = async (req, res) => {
-    //     const transfer_data = req.body;
-    //     const result = await familyService.transferToBusiness(
-    //         Number(req.params.sourceId),
-    //         Number(req.params.destinationId),
-    //         transfer_data
-    //     );
+    transferToBusiness: RequestHandler = async (req, res) => {
 
-    //     const response: ResponseMessage = {
-    //         status: 200,
-    //         message: "success",
-    //         data: { result },
-    //     };
-    //     res.status(response.status).json(response);
-    // };
+        console.log("Inside transfer controller");
+        const { amount } = req.body;
+
+        const transfer_result = await familyService.transferToBusiness(
+            Number(req.params.source_id),
+            Number(req.params.destination_id),
+            Number(amount)
+        );
+
+        if(!transfer_result) {
+            // throw new BadRequest("Transfer Failed");
+            throw new TransactionException();
+        }
+
+        const response: ResponseMessage = {
+            status: 200,
+            message: "success",
+            data: { transfer_result },
+        };
+
+        res.status(response.status).json(response);
+    };
+
 }
 
 const family_controller = new FamilyController();

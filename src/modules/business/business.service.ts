@@ -1,4 +1,4 @@
-// import fetch from "node-fetch";
+import fetch from "node-fetch";
 import { IAddress } from "../../types/accounts.interface.js";
 import accountService from "../account/account.service.js";
 import addressService from "../address/address.service.js";
@@ -67,9 +67,7 @@ class BusinessService
             account_id: account.account_id,
         });
 
-        const business_dto: IBusinessAccountDto = { ...business };
-        if (address) business_dto.address = address;
-
+        const business_dto = this.formatAccount(business);
         return business_dto;
     }
 
