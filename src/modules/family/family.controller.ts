@@ -15,18 +15,18 @@ import familyService from "./family.service.js";
 
 class FamilyController {
     createFamilyAccount: RequestHandler = async (req, res) => {
-        const family_data: ICreateFamily = req.body;
+        // const family_data: ICreateFamily = req.body;
 
-        const family: IFamilyAccountDB =
-            await familyService.createFamilyAccount(family_data);
+        // const family: IFamilyAccountDB =
+        //     await familyService.createFamilyAccount(family_data);
 
-        const response: ResponseMessage = {
-            status: 201,
-            message: "success",
-            data: { family },
-        };
+        // const response: ResponseMessage = {
+        //     status: 201,
+        //     message: "success",
+        //     data: { family },
+        // };
 
-        res.status(response.status).json(response);
+        // res.status(response.status).json(response);
     };
 
     //  /api/family/:id?details=full
