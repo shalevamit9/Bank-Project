@@ -31,11 +31,6 @@ class IndividualService
         return individuals.map((individual) => this.formatAccount(individual));
     };
 
-    // createIndividual = async (payload: ICreateIndividualDto) => {
-    //     const individual = await individualRepository.createIndividualAccount(payload);
-    //     return individual;
-    // };
-
     createIndividualAccount = async (
         create_individual_dto: ICreateIndividualDto
     ) => {
@@ -53,12 +48,6 @@ class IndividualService
             type: AccountTypes.Individual,
         });
 
-        //     individual_account_id: number;
-        // individual_id: number;
-        // first_name: string;
-        // last_name: string;
-        // email: string;
-
         create_individual_dto.address = address;
         const { individual_id, first_name, last_name, email } =
             create_individual_dto;
@@ -71,9 +60,10 @@ class IndividualService
             account_id: account.account_id,
         });
 
-        const individual_dto: IIndividualAccountDto = { ...individual };
-        if (address) individual_dto.address = address;
+        // const individual_dto: IIndividualAccount = { ...individual };
+        // if (address) individual_dto.address = address;
 
+        const individual_dto = this.formatAccount(individual);
         return individual_dto;
     };
 

@@ -39,7 +39,7 @@ class Validator {
     }
 
     hasMinSum(min: number, amounts: number[]) {
-        const result = amounts.reduce((sum: number, amount: number): number => {
+        const result = amounts.reduce((sum, amount)=> {
             return sum + amount;
         }, 0);
 

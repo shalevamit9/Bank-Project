@@ -43,7 +43,7 @@ class AccountService {
 
         const transaction: ITransaction = {
             source_account: {
-                source_id: source_account.account_id,
+                account_id: source_account.account_id,
                 balance: source_account.balance,
                 currency: source_account.currency,
             },
