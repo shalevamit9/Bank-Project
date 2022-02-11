@@ -4,7 +4,7 @@ import accountRepository from "./account.repository.js";
 
 export interface ITransaction {
     source_account: {
-        source_id: number;
+        account_id: number;
         balance: number;
         currency: string;
     };
