@@ -25,10 +25,12 @@ class BusinessRouter {
         );
         this.router.post(
             "/transfer/:source_id/individual/:destination_id",
+            raw(businessValidator.transferToIndividual),
             raw(businessController.transferToIndividual)
         );
         this.router.post(
             "/FXtransfer/:source_id/business/:destination_id",
+            raw(businessValidator.FXTransferToBusiness),
             raw(businessController.fxTransferToBusiness)
         );
     }

@@ -14,7 +14,7 @@
         "format": "prettier src/**/*.ts --write",
         "prepare": "husky install",
         "test": "mocha",
-        "coverage": "rm -rf coverage && nyc report",
+        "coverage": "rm -rf coverage && nyc mocha",
         "perf-tsc": "tsc --extendedDiagnostics"
     },
     "keywords": [

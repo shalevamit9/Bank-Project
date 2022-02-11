@@ -1,17 +1,17 @@
 import { Request, Response, RequestHandler, NextFunction } from "express";
-// import { IIndividualAccountDto } from "./individual.interface.js";
-// import { IBusinessAccountDto } from "./individual.interface.js";
 import validator from "../../utils/validator.js";
 import accountValidator from "../../utils/account.validator.js";
-// import businessService from "../business/business.service.js";
-// import individualService from "../individual/individual.service.js";
 import { IBusinessAccount } from "./business.interface.js";
 import businessRepository from "./business.repository.js";
 import { AccountTypes } from "../../types/accounts.interface.js";
 import { IValidationResult } from "../../types/validation.interface.js";
 import { validationResultsHandler } from "../../utils/validation.utils.js";
+import individualRepository from "../individual/individual.repository.js";
+import config from "../../config/config.js";
 
 class BusinessValidator {
+    business_minimum_allowed_balance : number = config.BUSINESS_MINIMUM_ALLOWED_BALANCE;
+
     createBusiness: RequestHandler = (
         req: Request,
         res: Response,
@@ -49,8 +49,16 @@ class BusinessValidator {
         res: Response,
         next: NextFunction
     ) => {
-        validator.required(req.params, ["id"]);
-        validator.isNumeric(req.params.id);
+        const results: IValidationResult[] = [];
+        results.push({
+            is_valid: validator.required(req.params, ["id"]),
+            message: "account_id is required",
+        });
+        results.push({
+            is_valid: validator.isNumeric(req.params.id),
+            message: "account_id has to be numeric",
+        });
+        validationResultsHandler(results);
 
         next();
     };
@@ -60,6 +68,7 @@ class BusinessValidator {
         res: Response,
         next: NextFunction
     ) => {
+        const results: IValidationResult[] = [];
         const accounts = await Promise.all([
             businessRepository.getBusinessById(Number(req.params.source_id)),
             businessRepository.getBusinessById(
@@ -67,55 +76,158 @@ class BusinessValidator {
             ),
         ]);
 
-        if (!accounts) throw new Error(`Accounts doesn't exist`);
-
+        results.push({
+            is_valid: validator.isExist(accounts, 2),
+            message: "At least one account doesn't exist",
+        });
         const [source_account, destination_account] = accounts;
-        validator.isExist(accounts, 2);
-        accountValidator.isActive(accounts);
-        accountValidator.isTypeOf([AccountTypes.Business], accounts);
-        accountValidator.isSameCurrency(source_account.currency, [
-            destination_account,
-        ]);
+        results.push({
+            is_valid: accountValidator.isActive(accounts),
+            message: "At least one account is not active",
+        });
+        results.push({
+            is_valid: accountValidator.isTypeOf(
+                [AccountTypes.Business],
+                accounts
+            ),
+            message: "Both accounts have to be of type business",
+        });
+        results.push({
+            is_valid: accountValidator.isSameCurrency(source_account.currency, [
+                destination_account,
+            ]),
+            message: "Both accounts need to have the same currency",
+        });
 
         const { amount: amountStr } = req.body;
         const amount = Number(amountStr);
-        validator.isNumeric(amount);
-        validator.isPositive(amount);
-        validator.hasMinimalRemainingBalance(10000, [
-            [source_account.balance, amount],
-        ]);
+        results.push({
+            is_valid: validator.isNumeric(amount),
+            message: "amount is not numeric",
+        });
+        results.push({
+            is_valid: validator.isPositive(amount),
+            message: "amount is not positive",
+        });
+        results.push({
+            is_valid: validator.hasMinimalRemainingBalance(this.business_minimum_allowed_balance, [
+                [source_account.balance, amount],
+            ]),
+            message: "source account doesn't have enough remaining balance",
+        });
+        validationResultsHandler(results);
 
         next();
     };
 
-    // transferToIndividual: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-    //     const business_dto : IBusinessAccount = await businessService.getBusinessAccountById(Number(req.params.source_id));
-    //     const individual_dto : IIndividualAccountDto = await individualService.getIndividualById(Number(req.params.destination));
-    //     validator.isExist([business_dto, individual_dto], 2);
-    //     accountValidator.isActive([business_dto, individual_dto]);
-    //     accountValidator.isTypeOf([AccountTypes.Business], [business_dto]);
-    //     accountValidator.isTypeOf([AccountTypes.Individual], [individual_dto]);
-    //     accountValidator.isSameCurrency(business_dto.currency, [individual_dto]);
-    //     validator.isNumeric(req.body.amount);
-    //     validator.isPositive(Number(req.body.amount));
-    //     validator.hasMinimalRemainingBalance(10000, [[business_dto.balance, Number(req.body.amount)]]);
+    transferToIndividual: RequestHandler = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        const results: IValidationResult[] = [];
+        const accounts = await Promise.all([
+            businessRepository.getBusinessById(Number(req.params.source_id)),
+            individualRepository.getIndividualById(
+                Number(req.params.destination_id)
+            ),
+        ]);
 
-    //     next();
-    // };
+        results.push({
+            is_valid: validator.isExist(accounts, 2),
+            message: "At least one account doesn't exist",
+        });
+        const [source_account, destination_account] = accounts;
+        results.push({
+            is_valid: accountValidator.isActive(accounts),
+            message: "At least one account is not active",
+        });
+        results.push({
+            is_valid: accountValidator.isTypeOf(
+                [AccountTypes.Business, AccountTypes.Individual],
+                accounts
+            ),
+            message:
+                "source can only be business account and destination can only be individual account",
+        });
+        results.push({
+            is_valid: accountValidator.isSameCurrency(source_account.currency, [
+                destination_account,
+            ]),
+            message: "Both accounts need to have the same currency",
+        });
 
-    // FXTransferToBusiness: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-    //     const source_business_dto : IBusinessAccount = await businessService.getBusinessAccountById(Number(req.params.source_id));
-    //     const destination_business_dto : IBusinessAccount = await businessService.getBusinessAccountById(Number(req.params.destination_id));
-    //     validator.isExist([source_business_dto, destination_business_dto], 2);
-    //     accountValidator.isActive([source_business_dto, destination_business_dto]);
-    //     accountValidator.isTypeOf([AccountTypes.Business], [source_business_dto, destination_business_dto]);
-    //     accountValidator.isSameCurrency(source_business_dto.currency, [destination_business_dto]);
-    //     validator.isNumeric(req.body.amount);
-    //     validator.isPositive(Number(req.body.amount));
-    //     validator.hasMinimalRemainingBalance(10000, [[source_business_dto.balance, Number(req.body.amount)]]);
+        const { amount: amountStr } = req.body;
+        const amount = Number(amountStr);
+        results.push({
+            is_valid: validator.isNumeric(amount),
+            message: "amount is not numeric",
+        });
+        results.push({
+            is_valid: validator.isPositive(amount),
+            message: "amount is not positive",
+        });
+        results.push({
+            is_valid: validator.hasMinimalRemainingBalance(this.business_minimum_allowed_balance, [
+                [source_account.balance, amount],
+            ]),
+            message: "source account doesn't have enough remaining balance",
+        });
+        validationResultsHandler(results);
 
-    //     next();
-    // };
+        next();
+    };
+
+    FXTransferToBusiness: RequestHandler = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        const results: IValidationResult[] = [];
+        const accounts = await Promise.all([
+            businessRepository.getBusinessById(Number(req.params.source_id)),
+            businessRepository.getBusinessById(
+                Number(req.params.destination_id)
+            ),
+        ]);
+
+        results.push({
+            is_valid: validator.isExist(accounts, 2),
+            message: "At least one account doesn't exist",
+        });
+        const [source_account] = accounts;
+        results.push({
+            is_valid: accountValidator.isActive(accounts),
+            message: "At least one account is not active",
+        });
+        results.push({
+            is_valid: accountValidator.isTypeOf(
+                [AccountTypes.Business],
+                accounts
+            ),
+            message: "Both accounts have to be of type business",
+        });
+
+        const { amount: amount_str } = req.body;
+        const amount = Number(amount_str);
+        results.push({
+            is_valid: validator.isNumeric(amount),
+            message: "amount is not numeric",
+        });
+        results.push({
+            is_valid: validator.isPositive(amount),
+            message: "amount is not positive",
+        });
+        results.push({
+            is_valid: validator.hasMinimalRemainingBalance(this.business_minimum_allowed_balance, [
+                [source_account.balance, amount],
+            ]),
+            message: "source account doesn't have enough remaining balance",
+        });
+        validationResultsHandler(results);
+
+        next();
+    };
 }
 
 const businessValidator = new BusinessValidator();

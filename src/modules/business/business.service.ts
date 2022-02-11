@@ -1,4 +1,4 @@
-//import fetch from "node-fetch";
+import fetch from "node-fetch";
 import { IAddress } from "../../types/accounts.interface.js";
 import accountService from "../account/account.service.js";
 import addressService from "../address/address.service.js";
@@ -99,7 +99,6 @@ class BusinessService
         return transaction;
     }
 
-    // still need to test after finishing individual module
     async transferToIndividual(
         source_id: number,
         destination_id: number,
@@ -112,13 +111,6 @@ class BusinessService
 
         const isValidTransfer = amount <= 1000;
         if (!isValidTransfer) throw new BadRequest("Passed Transfer Limit");
-
-        const isTransfered = await businessRepository.transferToIndividual(
-            business_account,
-            individual_account,
-            amount
-        );
-        if (!isTransfered) return null;
 
         const transaction = await accountService.transfer(
             business_account,
@@ -166,8 +158,9 @@ class BusinessService
 
         const response = await fetch(url);
         const data = (await response.json()) as IExchangeRate;
-        if (!data.rates[currency])
+        if (!data.rates[currency]) {
             throw new Error(`currency: ${currency} doesn't exist in results.`);
+        }
 
         return data.rates[currency];
     }
