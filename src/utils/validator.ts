@@ -30,7 +30,7 @@ class Validator {
         return /^-?[0-9]+$/.test(String(value));
     }
 
-    length(length_to_validate: number, input: string) {
+    isValidLength(length_to_validate: number, input: string) {
         return input.length === length_to_validate;
     }
 
