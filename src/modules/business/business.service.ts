@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import config from "../../config/config.js";
 import { IAddress } from "../../types/accounts.interface.js";
 import accountService from "../account/account.service.js";
 import addressService from "../address/address.service.js";
@@ -18,6 +19,12 @@ interface IExchangeRate {
         [key: string]: number;
     };
 }
+
+const {
+    BUSINESS_MAX_TRANSFER_LIMIT_SAME_COMPANY,
+    BUSINESS_MAX_TRANSFER_LIMIT_OTHER_COMPANY,
+    BUSINESS_MAX_TRANSFER_LIMIT_INDIVIDUAL,
+} = config;
 
 class BusinessService
     implements IAccountFormatter<IBusinessAccount, IBusinessAccountDto>
@@ -83,9 +90,9 @@ class BusinessService
 
         const isValidTransfer =
             (source_account.company_id === destination_account.company_id &&
-                amount <= 10000) ||
+                amount <= BUSINESS_MAX_TRANSFER_LIMIT_SAME_COMPANY) ||
             (source_account.company_id !== destination_account.company_id &&
-                amount <= 1000);
+                amount <= BUSINESS_MAX_TRANSFER_LIMIT_OTHER_COMPANY);
         if (!isValidTransfer) throw new BadRequest("Passed Transfer Limit");
 
         const transaction = await accountService.transfer(
@@ -107,7 +114,8 @@ class BusinessService
             individualRepository.getIndividualById(destination_id),
         ]);
 
-        const isValidTransfer = amount <= 1000;
+        const isValidTransfer =
+            amount <= BUSINESS_MAX_TRANSFER_LIMIT_INDIVIDUAL;
         if (!isValidTransfer) throw new BadRequest("Passed Transfer Limit");
 
         const transaction = await accountService.transfer(
@@ -131,9 +139,9 @@ class BusinessService
 
         const isValidTransfer =
             (source_account.company_id === destination_account.company_id &&
-                amount <= 10000) ||
+                amount <= BUSINESS_MAX_TRANSFER_LIMIT_SAME_COMPANY) ||
             (source_account.company_id !== destination_account.company_id &&
-                amount <= 1000);
+                amount <= BUSINESS_MAX_TRANSFER_LIMIT_OTHER_COMPANY);
         if (!isValidTransfer) throw new BadRequest("Passed Transfer Limit");
 
         const rate = await this.getRate(

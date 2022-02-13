@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import validator from "../../utils/validator.js";
 import familyService from "./family.service.js";
+import config from "../../config/config.js";
 import { IIndividualAccountDto } from "../individual/individual.interface.js";
 import accountValidator from "../../utils/account.validator.js";
 import { TransferTuple } from "../../types/accounts.interface.js";
@@ -15,8 +16,8 @@ import {
     BalanceTransfer,
     IAccount,
 } from "../../types/accounts.interface.js";
-import config from "../../config/config.js";
-const { FAMILY_MINIMUM_ALLOWED_BALANCE } = config;
+
+const { FAMILY_MINIMUM_ALLOWED_BALANCE, INDIVIDUAL_MINIMUM_ALLOWED_BALANCE } = config;
 
 class FamilyValidator {
     createFamily: RequestHandler = async (req, res, next) => {
@@ -77,7 +78,7 @@ class FamilyValidator {
             account.balance,
             family_dto.owners[i][1],
         ]);
-        validator.hasMinimalRemainingBalance(1000, balance_tuples);
+        validator.hasMinimalRemainingBalance(INDIVIDUAL_MINIMUM_ALLOWED_BALANCE, balance_tuples);
 
         validationResultsHandler(results);
 

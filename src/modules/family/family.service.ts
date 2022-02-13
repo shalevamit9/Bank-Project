@@ -4,6 +4,7 @@ import accountService from "../account/account.service.js";
 import businessRepository from "../business/business.repository.js";
 import individualService from "../individual/individual.service.js";
 import { ICreateFamily } from "./family.interface.js";
+import config from "../../config/config.js";
 import familyRepository from "./family.repository.js";
 import {
     IIndividualAccount,
@@ -15,6 +16,8 @@ import {
     TransferTuple,
 } from "../../types/accounts.interface.js";
 
+
+const { FAMILY_MAX_TRANSFER_LIMIT } = config;
 class FamilyService {
     async createFamilyAccount(family_data: ICreateFamily) {
         const { currency } = family_data;
@@ -144,7 +147,7 @@ class FamilyService {
             destination_id
         );
 
-        if (transfer_amount > 5000) {  // define constants
+        if (transfer_amount > FAMILY_MAX_TRANSFER_LIMIT) {
             throw new BadRequest("Cannot perform transfer - Invalid amount");
         }
 
