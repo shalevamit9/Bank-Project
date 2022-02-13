@@ -36,7 +36,7 @@ class BusinessValidator {
             message: "company_id is not greater than 10000000",
         });
         results.push({
-            is_valid: validator.length(8, String(business_dto.company_id)),
+            is_valid: validator.isValidLength(8, String(business_dto.company_id)),
             message: "company_id length is not 8",
         });
         validationResultsHandler(results);
@@ -77,7 +77,7 @@ class BusinessValidator {
         ]);
 
         results.push({
-            is_valid: validator.isExist(accounts, 2),
+            is_valid: validator.isExist(accounts),
             message: "At least one account doesn't exist",
         });
         const [source_account, destination_account] = accounts;
@@ -134,7 +134,7 @@ class BusinessValidator {
         ]);
 
         results.push({
-            is_valid: validator.isExist(accounts, 2),
+            is_valid: validator.isExist(accounts),
             message: "At least one account doesn't exist",
         });
         const [source_account, destination_account] = accounts;
@@ -192,7 +192,7 @@ class BusinessValidator {
         ]);
 
         results.push({
-            is_valid: validator.isExist(accounts, 2),
+            is_valid: validator.isExist(accounts),
             message: "At least one account doesn't exist",
         });
         const [source_account] = accounts;

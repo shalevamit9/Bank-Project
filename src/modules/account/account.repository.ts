@@ -1,7 +1,7 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { db } from "../../db/mysql.connection.js";
 import { AccountStatuses, IAccount } from "../../types/accounts.interface.js";
-import { ICreateAccount } from "./account.interface.js";
+import { ICreateAccount, StatusTuple } from "./account.interface.js";
 
 class AccountRepository {
     async getAccountById(account_id: number) {
@@ -54,6 +54,30 @@ class AccountRepository {
                 destination_account.account_id,
             ]
         )) as ResultSetHeader[];
+
+        return !!result.affectedRows;
+    }
+
+    async getAccountsStatuses(accounts_ids: number[]) {
+        const ids_placeholder = Array(accounts_ids.length).fill("?").join(",");
+        const get_all_statuses = `SELECT account_id, status, type FROM accounts WHERE account_id IN (${ids_placeholder})`;
+
+        const [accounts] = (await db.query(get_all_statuses, accounts_ids)) as RowDataPacket[][];
+
+        return accounts.map((account) => [account.account_id, account.status, account.type]) as StatusTuple[];
+    }
+
+    async changeAccountsStatuses(
+        accounts_ids: number[],
+        status: AccountStatuses
+    ) {
+        const ids_placeholder = Array(accounts_ids.length).fill("?").join(",");
+        const update_status = `UPDATE accounts SET status = ? WHERE account_id IN (${ids_placeholder})`;
+
+        const [result] = (await db.query(update_status, [
+            status,
+            ...accounts_ids,
+        ])) as ResultSetHeader[];
 
         return !!result.affectedRows;
     }

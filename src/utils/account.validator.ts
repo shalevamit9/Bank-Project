@@ -12,7 +12,7 @@ class AccountValidator {
         return result;
     }
 
-    isTypeOf(types: AccountTypes[], accounts: IAccount[]) {
+    isTypeOf(types: AccountTypes[], accounts: Partial<IAccount>[]) {
         const result = accounts.every((account) =>
             types.some((type) => type === account.type)
         );

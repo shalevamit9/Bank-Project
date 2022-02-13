@@ -14,6 +14,7 @@ import { attachRequestId } from "./middlewares/attachRequestId.middleware.js";
 import { logger } from "./middlewares/logger.middleware.js";
 import individualRouter from "./modules/individual/individual.router.js";
 import familyRouter from "./modules/family/family.router.js";
+import accountRouter from "./modules/account/account.router.js";
 
 const { HOST, PORT } = config;
 
@@ -51,6 +52,7 @@ class App {
         this.app.use(`${API_PATH}/business`, businessRouter.router);
         this.app.use(`${API_PATH}/individual`, individualRouter.router);
         this.app.use(`${API_PATH}/family`, familyRouter.router);
+        this.app.use(`${API_PATH}/account`, accountRouter.router);
     }
 
     private initializeErrorMiddlewares() {
