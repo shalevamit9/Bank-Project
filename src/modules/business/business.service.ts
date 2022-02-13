@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import { IAddress } from "../../types/accounts.interface.js";
 import accountService from "../account/account.service.js";
 import addressService from "../address/address.service.js";
@@ -12,12 +11,7 @@ import { AccountTypes } from "../../types/accounts.interface.js";
 import { IAccountFormatter } from "../../types/formatter.interface.js";
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
 import individualRepository from "../individual/individual.repository.js";
-
-interface IExchangeRate {
-    rates: {
-        [key: string]: number;
-    };
-}
+import { getRate } from "../../utils/exchange.rate.js";
 
 class BusinessService
     implements IAccountFormatter<IBusinessAccount, IBusinessAccountDto>
@@ -136,7 +130,7 @@ class BusinessService
                 amount <= 1000);
         if (!isValidTransfer) throw new BadRequest("Passed Transfer Limit");
 
-        const rate = await this.getRate(
+        const rate = await getRate(
             source_account.currency,
             destination_account.currency
         );
@@ -151,18 +145,18 @@ class BusinessService
         return transaction;
     }
 
-    private async getRate(base: string, currency: string) {
-        const base_url = `http://api.exchangeratesapi.io/latest`;
-        const url = `${base_url}?base=${base}&symbols=${currency}&access_key=64d433554d6a3822ea642ec99a851038`;
+    // private async getRate(base: string, currency: string) {
+    //     const base_url = `http://api.exchangeratesapi.io/latest`;
+    //     const url = `${base_url}?base=${base}&symbols=${currency}&access_key=64d433554d6a3822ea642ec99a851038`;
 
-        const response = await fetch(url);
-        const data = (await response.json()) as IExchangeRate;
-        if (!data.rates[currency]) {
-            throw new Error(`currency: ${currency} doesn't exist in results.`);
-        }
+    //     const response = await fetch(url);
+    //     const data = (await response.json()) as IExchangeRate;
+    //     if (!data.rates[currency]) {
+    //         throw new Error(`currency: ${currency} doesn't exist in results.`);
+    //     }
 
-        return data.rates[currency];
-    }
+    //     return data.rates[currency];
+    // }
 
     formatAccount(business: IBusinessAccount) {
         const business_dto: IBusinessAccountDto = {
@@ -171,7 +165,7 @@ class BusinessService
             business_account_id: business.business_account_id,
             company_id: business.company_id,
             company_name: business.company_name,
-            context: business.company_name,
+            context: business.context,
             currency: business.currency,
             status: business.status,
             type: business.type,
