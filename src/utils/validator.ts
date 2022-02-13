@@ -1,4 +1,4 @@
-import { BalanceTransfer, IAccount } from "../types/accounts.interface.js";
+import { BalanceTransfer } from "../types/accounts.interface.js";
 import { IIndexable } from "../types/indexable.interface.js";
 
 class Validator {
@@ -34,8 +34,7 @@ class Validator {
         return input.length === length_to_validate;
     }
 
-    isExist(accounts: IAccount[]) {
-        // return accounts.length === amount;
+    isExist(accounts: any[]) {
         return accounts.every(Boolean);
     }
 
