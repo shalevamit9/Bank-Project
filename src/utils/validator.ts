@@ -19,7 +19,7 @@ class Validator {
     }
 
     isLessThan(limit: number, num: number) {
-        return num < limit;
+        return num <= limit;
     }
 
     isGreaterThan(threshold: number, num: number) {
@@ -30,16 +30,17 @@ class Validator {
         return /^-?[0-9]+$/.test(String(value));
     }
 
-    length(length_to_validate: number, input: string) {
+    isValidLength(length_to_validate: number, input: string) {
         return input.length === length_to_validate;
     }
 
-    isExist(accounts: IAccount[], amount: number) {
-        return accounts.length === amount;
+    isExist(accounts: IAccount[]) {
+        // return accounts.length === amount;
+        return accounts.every(Boolean);
     }
 
     hasMinSum(min: number, amounts: number[]) {
-        const result = amounts.reduce((sum, amount)=> {
+        const result = amounts.reduce((sum, amount) => {
             return sum + amount;
         }, 0);
 

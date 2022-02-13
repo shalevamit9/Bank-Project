@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import { RequestHandler } from "express";
 import { ResponseMessage } from "../../types/messages.interface.js";
 import individualService from "./individual.service.js";
