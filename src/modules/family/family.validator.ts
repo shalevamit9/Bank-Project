@@ -64,7 +64,7 @@ class FamilyValidator {
         });
         results.push({
             is_valid: validator.hasMinSum(
-                5000, // define constant
+                5000, // define constants
                 family_dto.owners.map((owner) => owner[1])
             ),
             message:
@@ -86,11 +86,11 @@ class FamilyValidator {
         const results: IValidationResult[] = [];
         results.push({
             is_valid: validator.required(req.params, ["id"]),
-            message: `id property is missing`,
+            message: "id property is missing",
         });
         results.push({
             is_valid: validator.isNumeric(req.params.id),
-            message: `the provided id should be numeric`,
+            message: "the provided id should be numeric",
         });
 
         validationResultsHandler(results);
@@ -168,15 +168,12 @@ class FamilyValidator {
         const family_dto = await familyService.getFamilyById(
             Number(req.params.id)
         );
-        console.log("Tuples in valiator: ", accounts_tuples);
-        console.log("Tuples[].length = ", accounts_tuples.length);
-        console.log("is empty? ", validator.isEmpty(accounts_tuples));
 
         const owners = family_dto.owners as IIndividualAccountDto[];
 
         results.push({
             is_valid: !validator.isEmpty(accounts_tuples),
-            message: `individual accounts list should not be empty`,
+            message: "individual accounts list should not be empty",
         });
 
         results.push({
@@ -186,7 +183,7 @@ class FamilyValidator {
                     validator.isNumeric(account[1]) && // amount
                     validator.isPositive(account[1])
             ),
-            message: `accounts IDs and amounts should be numeric and positive`,
+            message: "accounts IDs and amounts should be numeric and positive",
         });
 
         results.push({
@@ -195,7 +192,7 @@ class FamilyValidator {
                     (owner) => owner.individual_account_id === account[0]
                 );
             }),
-            message: `all individual accounts must be assigned to the family`,
+            message: "all individual accounts must be assigned to the family",
         });
 
         validationResultsHandler(results);
@@ -208,12 +205,12 @@ class FamilyValidator {
 
         results.push({
             is_valid: validator.required(req.params, ["id"]),
-            message: `id property is missing`,
+            message: "id property is missing",
         });
 
         results.push({
             is_valid: validator.isNumeric(req.params.id),
-            message: `id property should be numeric`,
+            message: "id property should be numeric",
         });
 
         validationResultsHandler(results);

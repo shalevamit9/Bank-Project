@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { db } from "../../db/mysql.connection.js";
 import { TransferTuple } from "../../types/accounts.interface.js";
@@ -206,14 +205,6 @@ class FamilyRepository {
 
         return !!result.affectedRows;
     }
-
-    // async getIndividualsAssignedToFamilies() {
-    //     // we receive tuples: acount_id, status, type
-    //     // get from DB individual_account_id (matching to the account_id)
-    //     // get from DB the families that the individual is assigned to
-    //     // check if any other accounts are from the same family
-    //     // remove accounts from families
-    // }
 }
 
 const familyRepository = new FamilyRepository();

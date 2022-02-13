@@ -1,19 +1,19 @@
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
+import { ICreateAccount } from "../account/account.interface.js";
+import accountService from "../account/account.service.js";
+import businessRepository from "../business/business.repository.js";
+import individualService from "../individual/individual.service.js";
+import { ICreateFamily } from "./family.interface.js";
+import familyRepository from "./family.repository.js";
+import {
+    IIndividualAccount,
+    IIndividualAccountDto,
+} from "../individual/individual.interface.js";
 import {
     AccountStatuses,
     AccountTypes,
     TransferTuple,
 } from "../../types/accounts.interface.js";
-import { ICreateAccount } from "../account/account.interface.js";
-import accountService from "../account/account.service.js";
-import businessRepository from "../business/business.repository.js";
-import {
-    IIndividualAccount,
-    IIndividualAccountDto,
-} from "../individual/individual.interface.js";
-import individualService from "../individual/individual.service.js";
-import { ICreateFamily } from "./family.interface.js";
-import familyRepository from "./family.repository.js";
 
 class FamilyService {
     async createFamilyAccount(family_data: ICreateFamily) {
@@ -34,8 +34,7 @@ class FamilyService {
 
         const family = await this.addFamilyMembers(
             new_family_id,
-            family_data.owners,
-            "full"
+            family_data.owners
         );
 
         return family;
@@ -44,7 +43,7 @@ class FamilyService {
     async getFamilyById(family_id: number, details_level = "full") {
         const family = await familyRepository.getShortFamilyDetails(family_id);
 
-        if(!family) {
+        if (!family) {
             throw new BadRequest("Account doesn't exist");
         }
 
@@ -142,7 +141,7 @@ class FamilyService {
             destination_id
         );
 
-        if (transfer_amount > 5000) {
+        if (transfer_amount > 5000) {  // define constants
             throw new BadRequest("Cannot perform transfer - Invalid amount");
         }
 
