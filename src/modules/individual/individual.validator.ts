@@ -30,7 +30,7 @@ class IndividualValidator {
             message: "individual_account_id can't be exist",
         });
         results.push({
-            is_valid: validator.length(7, String(individual_dto.individual_id)),
+            is_valid: validator.isValidLength(7, String(individual_dto.individual_id)),
             message: "individual_id length is not 7",
         });
         results.push({

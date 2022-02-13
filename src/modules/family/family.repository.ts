@@ -1,14 +1,13 @@
 /* eslint-disable class-methods-use-this */
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { db } from "../../db/mysql.connection.js";
-import { BadRequest } from "../../exceptions/badRequest.exception.js";
 import { TransferTuple } from "../../types/accounts.interface.js";
-// import { IBusinessAccount } from "../business/business.interface.js";
+import { BadRequest } from "../../exceptions/badRequest.exception.js";
+import { IFamilyAccountDto, ICreateFamily } from "./family.interface.js";
 import {
     IIndividualAccount,
     IIndividualAccountDto,
 } from "../individual/individual.interface.js";
-import { IFamilyAccountDto, ICreateFamily } from "./family.interface.js";
 
 class FamilyRepository {
     async getFamilyById(family_id: number) {
@@ -20,7 +19,7 @@ class FamilyRepository {
 
         const [family] = (await db.query(get_family)) as RowDataPacket[][];
 
-        return family[0] as IFamilyAccountDto; // !!!! was IFamilyAccountDB
+        return family[0] as IFamilyAccountDto;
     }
 
     async getFamilyOwnersIds(family_id: number) {
@@ -46,9 +45,12 @@ class FamilyRepository {
 
     async getShortFamilyDetails(family_id: number): Promise<IFamilyAccountDto> {
         const family = await this.getFamilyById(family_id);
-        family["owners"] = await this.getFamilyOwnersIds(family_id);
 
-        return family; // as IFamilyAccountDto;
+        if(family) {
+            family["owners"] = await this.getFamilyOwnersIds(family_id);
+        }
+
+        return family;
     }
 
     async getFullFamilyDetails(family_id: number) {
@@ -85,7 +87,7 @@ class FamilyRepository {
                 const update_individuals_balance = `UPDATE accounts
                     INNER JOIN individual_accounts ON individual_accounts.account_id = accounts.account_id
                     SET accounts.balance = accounts.balance - ?
-                    WHERE individual_accounts.individual_account_id = ?`;
+                    WHERE individual_accounts.individual_account_id = ?;`;
 
                 for (const account of accounts_to_add) {
                     await db.query(add_member, [family_id, account[0]]);
@@ -98,7 +100,7 @@ class FamilyRepository {
                 const update_family_balance = `UPDATE accounts
                     INNER JOIN family_accounts ON family_accounts.account_id = accounts.account_id
                     SET accounts.balance = accounts.balance + ?
-                    WHERE family_accounts.family_account_id = ?`;
+                    WHERE family_accounts.family_account_id = ?;`;
 
                 await db.query(update_family_balance, [
                     amount_to_add,
@@ -195,7 +197,7 @@ class FamilyRepository {
         const deactivate_account = `UPDATE accounts
             INNER JOIN family_accounts ON accounts.account_id = family_accounts.account_id
             SET accounts.status = 0
-            WHERE family_accounts.family_account_id = ?`;
+            WHERE family_accounts.family_account_id = ?;`;
 
         const [result] = (await db.query(
             deactivate_account,
@@ -204,6 +206,14 @@ class FamilyRepository {
 
         return !!result.affectedRows;
     }
+
+    // async getIndividualsAssignedToFamilies() {
+    //     // we receive tuples: acount_id, status, type
+    //     // get from DB individual_account_id (matching to the account_id)
+    //     // get from DB the families that the individual is assigned to
+    //     // check if any other accounts are from the same family
+    //     // remove accounts from families
+    // }
 }
 
 const familyRepository = new FamilyRepository();

@@ -95,6 +95,6 @@ class BusinessRepository {
     }
 }
 
-const artistRepository = new BusinessRepository();
+const businessRepository = new BusinessRepository();
 
-export default artistRepository;
+export default businessRepository;
