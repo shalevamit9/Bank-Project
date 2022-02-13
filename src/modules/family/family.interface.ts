@@ -24,4 +24,3 @@ export type ICreateFamily = Pick<IFamilyAccountDto, "currency" | "context"> & {
 export type IUpdateMembers = {
     individual_accounts: TransferTuple[];
 };
-export type IFamilyAccountDB = Partial<IFamilyAccountDto>;
