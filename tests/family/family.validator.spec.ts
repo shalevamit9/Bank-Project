@@ -1,24 +1,51 @@
 import { expect } from "chai";
+import sinon from "sinon";
 import familyValidator from "../../src/modules/family/family.validator";
+
+// ================================
+//      YARIV'S EXAMPLES
+// ================================
+
+// const myObject = {
+//     someMethod: () => "some output value",
+// };
+
+// sinon.replace(myObject, "someMethod", sinon.fake.returns("fake value"));
+
+// const fake = sinon.fake.throws(new Error("not enough sugar"));
+
+// // 2 options for the same thing
+// expect(fake).to.throw("not enough sugar");
+// expect(() => fake()).to.throw("not enough sugar");
+
+// !!! in each describe - write:
+
+/*
+ * !!! in each describe - write: !!!
+ *          after(sinon.restire);
+ * 
+ */
+// ================================
+// ================================
 
 
 describe("Family Validator Functions:", () => {
 
-    context("validate createFamily", () => {
+    context("#createFamily()", () => {
   
         it("should be a function", () => {
             expect(familyValidator.createFamily).to.be.a("function");
         });
     });
 
-    context("validate getFamily", () => {
+    context("#getFamily()", () => {
   
         it("should be a function", () => {
             expect(familyValidator.getFamily).to.be.a("function");
         });
     });
 
-    context("validate addFamilyMembers", () => {
+    context("#addFamilyMembers()", () => {
   
         it("should be a function", () => {
             expect(familyValidator.addFamilyMembers).to.be.a("function");
