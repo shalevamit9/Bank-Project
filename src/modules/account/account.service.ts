@@ -2,6 +2,20 @@ import { IAccount } from "../../types/accounts.interface.js";
 import { ICreateAccount } from "./account.interface.js";
 import accountRepository from "./account.repository.js";
 
+export interface ITransaction {
+    source_account: {
+        account_id: number;
+        balance: number;
+        currency: string;
+    };
+    destination_account: {
+        account_id: number;
+        balance: number;
+        currency: string;
+    };
+    fx_rate?: number;
+}
+
 class AccountService {
     async getAccountById(account_id: number) {
         const account = await accountRepository.getAccountById(account_id);
@@ -27,9 +41,9 @@ class AccountService {
         );
         if (!isTransfered) return null;
 
-        return {
+        const transaction: ITransaction = {
             source_account: {
-                source_id: source_account.account_id,
+                account_id: source_account.account_id,
                 balance: source_account.balance,
                 currency: source_account.currency,
             },
@@ -39,6 +53,7 @@ class AccountService {
                 currency: destination_account.currency,
             },
         };
+        return transaction;
     }
 }
 

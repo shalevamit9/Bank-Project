@@ -1,9 +1,12 @@
+import { BadRequest } from "../../exceptions/badRequest.exception.js";
 import {
     AccountStatuses,
     AccountTypes,
     TransferTuple,
 } from "../../types/accounts.interface.js";
 import { ICreateAccount } from "../account/account.interface.js";
+import accountService from "../account/account.service.js";
+import businessRepository from "../business/business.repository.js";
 import {
     IIndividualAccount,
     IIndividualAccountDto,
@@ -14,27 +17,28 @@ import familyRepository from "./family.repository.js";
 
 class FamilyService {
     async createFamilyAccount(family_data: ICreateFamily) {
-        // const { currency } = family_data;
+        const { currency } = family_data;
 
-        // const account_data: ICreateAccount = {
-        //     currency,
-        //     balance: 0,
-        //     status: AccountStatuses.Active,
-        //     type: AccountTypes.Family,
-        // };
+        const account_data: ICreateAccount = {
+            currency,
+            balance: 0,
+            status: AccountStatuses.Active,
+            type: AccountTypes.Family,
+        };
 
-        // const new_family_id = await familyRepository.createFamilyAccount(
-        //     family_data,
-        //     account_data
-        // );
+        const account = await accountService.createAccount(account_data);
+        const new_family_id = await familyRepository.createFamilyAccount(
+            family_data,
+            account.account_id
+        );
 
-        // const family = await this.addFamilyMembers(
-        //     new_family_id,
-        //     family_data.owners,
-        //     "full"
-        // );
+        const family = await this.addFamilyMembers(
+            new_family_id,
+            family_data.owners,
+            "full"
+        );
 
-        // return family;
+        return family;
     }
 
     async getFamilyById(family_id: number, details_level = "full") {
@@ -62,7 +66,7 @@ class FamilyService {
     async addFamilyMembers(
         family_id: number,
         accounts_to_add: TransferTuple[],
-        details_level: string
+        details_level = "full"
     ) {
         const amounts_arr = accounts_to_add.map((account) => account[1]);
 
@@ -88,13 +92,11 @@ class FamilyService {
     async removeFamilyMembers(
         family_id: number,
         accounts_to_remove: TransferTuple[],
-        details_level: string
+        details_level = "full"
     ) {
-        const amounts_arr = accounts_to_remove.map((account) => account[1]);
-
-        const amount_to_remove = amounts_arr.reduce(
-            (amount, total_amount) => amount + total_amount
-        );
+        const amount_to_remove = accounts_to_remove
+            .map((account) => account[1])
+            .reduce((total_amount, amount) => amount + total_amount, 0);
 
         await familyRepository.removeMembersFromFamily(
             family_id,
@@ -113,52 +115,45 @@ class FamilyService {
     }
 
     async closeFamilyAccount(family_id: number) {
-        // get family with accounts
+        const family_to_close = await this.getFamilyById(family_id, "short");
+
+        if ((family_to_close.owners as number[]).length > 0) {
+            throw new BadRequest(
+                "can't close family account because there are still owners left"
+            );
+        }
+
+        if (family_to_close.status === AccountStatuses.Inactive) {
+            throw new BadRequest("account is already closed");
+        }
+
         const isClosed = await familyRepository.closeFamilyAccount(family_id);
         return isClosed;
     }
 
-    // transferToBusiness(
-    //     source_id: number,
-    //     destination_id: number,
-    //     transfer_data: any
-    // ) {
-    //     throw new Error(
-    //         "Method not implemented." +
-    //             source_id.toString() +
-    //             destination_id.toString() +
-    //             transfer_data
-    //     );
-    //     /*
-    //      * the amount to transfer is reduced from the balance of the family account!
-    //      * (each family member puts money in the family account when he joins)
-    //      */
+    async transferToBusiness(
+        source_id: number,
+        destination_id: number,
+        transfer_amount: number
+    ) {
+        const source_account = await familyRepository.getFamilyById(source_id);
+        const destination_account = await businessRepository.getBusinessById(
+            destination_id
+        );
 
-    //     /**
-    //      *
-    //      * UPDATE account SET balance = CASE WHEN account_id = 1 THEN 1000
-    //                         WHEN account_id = 2 THEN 2000
-    //                         END
-    //                         WHERE account_id = 1 OR account_id = 2;
-    //         11:57
-    //         עבור ביצוע ההעברה בין חשבונות בשאילתא אחת.
-    //      */
-    // }
+        if (transfer_amount > 5000) {
+            throw new BadRequest("Cannot perform transfer - Invalid amount");
+        }
 
-    // formatAccount(family: IFamilyAccount): IFamilyAccountDto {
-    //     const family_dto: IFamilyAccountDto = {
-    //         account_id: family.account_id,
-    //         currency: family.currency,
-    //         balance: family.balance,
-    //         type: family.type, // "Individual" | "Business" | "Family";
-    //         status: family.status, // 0 | 1;
-    //         family_account_id: family.family_account_id,
-    //         context: family.context, // (travel / morgage / emergency / savings / checking) --> free text
-    //         owners: {}, // ???
-    //     };
+        const transfer_result = await accountService.transfer(
+            source_account,
+            destination_account,
+            transfer_amount,
+            transfer_amount
+        );
 
-    //     return family_dto;
-    // }
+        return transfer_result;
+    }
 }
 
 const family_service = new FamilyService();

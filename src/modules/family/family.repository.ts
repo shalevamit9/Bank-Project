@@ -2,16 +2,13 @@
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { db } from "../../db/mysql.connection.js";
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
-import { TransferTuple, IAccount } from "../../types/accounts.interface.js";
+import { TransferTuple } from "../../types/accounts.interface.js";
+// import { IBusinessAccount } from "../business/business.interface.js";
 import {
     IIndividualAccount,
     IIndividualAccountDto,
 } from "../individual/individual.interface.js";
-import {
-    IFamilyAccountDto,
-    ICreateFamily,
-    IFamilyAccountDB,
-} from "./family.interface.js";
+import { IFamilyAccountDto, ICreateFamily } from "./family.interface.js";
 
 class FamilyRepository {
     async getFamilyById(family_id: number) {
@@ -23,7 +20,7 @@ class FamilyRepository {
 
         const [family] = (await db.query(get_family)) as RowDataPacket[][];
 
-        return family[0] as IFamilyAccountDB;
+        return family[0] as IFamilyAccountDto; // !!!! was IFamilyAccountDB
     }
 
     async getFamilyOwnersIds(family_id: number) {
@@ -39,7 +36,7 @@ class FamilyRepository {
         type IndividualId = Pick<
             IIndividualAccountDto,
             "individual_account_id"
-        >; // maybe export to another module
+        >;
         const owners_ids = owners.map(
             (owner) => (owner as IndividualId).individual_account_id
         );
@@ -51,7 +48,7 @@ class FamilyRepository {
         const family = await this.getFamilyById(family_id);
         family["owners"] = await this.getFamilyOwnersIds(family_id);
 
-        return family as IFamilyAccountDto;
+        return family; // as IFamilyAccountDto;
     }
 
     async getFullFamilyDetails(family_id: number) {
@@ -115,20 +112,12 @@ class FamilyRepository {
         }
     }
 
-    async createFamilyAccount(
-        family_data: ICreateFamily,
-        account_data: Omit<IAccount, "account_id">
-    ) {
+    async createFamilyAccount(family_data: ICreateFamily, account_id: number) {
         const { context } = family_data;
-
-        const [new_account] = (await db.query(
-            "INSERT INTO accounts SET ?;",
-            account_data
-        )) as ResultSetHeader[];
 
         const family_account_data = {
             context,
-            account_id: new_account.insertId,
+            account_id,
         };
 
         const [new_family_account] = (await db.query(
@@ -160,13 +149,10 @@ class FamilyRepository {
             const owners_left_after_removal =
                 (result[0].owners_count as number) - accounts_to_remove.length;
 
-            /*  
-            Make sure there is a minimal amount left in the account (if there are any owners left after the removal)
-            BEFORE deleting from the DB !!!
-            */
             if (
-                owners_left_after_removal > 0 &&
-                current_balance - amount_to_remove < 5000
+                current_balance - amount_to_remove < 0 ||
+                (owners_left_after_removal > 0 &&
+                    current_balance - amount_to_remove < 5000) // define constant
             ) {
                 throw new BadRequest(
                     "can't remove family members! remaining balance is invalid."
@@ -206,14 +192,6 @@ class FamilyRepository {
     }
 
     async closeFamilyAccount(family_id: number) {
-        const family_to_close = await this.getShortFamilyDetails(family_id);
-
-        if ((family_to_close.owners as number[]).length > 0) {
-            throw new BadRequest(
-                "can't close family account because there are still owners left"
-            );
-        }
-
         const deactivate_account = `UPDATE accounts
             INNER JOIN family_accounts ON accounts.account_id = family_accounts.account_id
             SET accounts.status = 0
@@ -223,33 +201,9 @@ class FamilyRepository {
             deactivate_account,
             family_id
         )) as ResultSetHeader[];
+
         return !!result.affectedRows;
     }
-
-    // async isInFamily(family_id: number, individual_account_ids: number[]) {
-    //     // const family = await this.getFamilyById(family_id);
-    //     const getFamilyOwners = `SELECT family_individuals.individual_account_id
-    //          FROM family_accounts INNER JOIN family_individuals
-    //          ON family_accounts.family_account_id = family_individuals.family_account_id
-    //          WHERE family_accounts.family_account_id = ${family_id};`;
-
-    //     const [result] = (await db.query(getFamilyOwners)) as RowDataPacket[][]; // RowDataPacket[][] ??
-
-    //     const owners_ids = result as number[]; // result[0] ??
-
-    //     // const owners_ids = family.owners.map((owner) => owner.account_id);
-
-    //     for (const individual_account_id of individual_account_ids) {
-    //         if (!owners_ids.includes(individual_account_id)) {
-    //             return false;
-    //             // throw new Error(`account ${individual_account_id} doesn't belong to this family account`);
-    //         }
-    //     }
-
-    //    // return individual_account_ids.every((id) => owners_ids.includes(id));
-
-    //     return true;
-    // }
 }
 
 const familyRepository = new FamilyRepository();
