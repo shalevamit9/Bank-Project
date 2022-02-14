@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/await-thenable */
 import { Request, Response } from "express";
 import { expect } from "chai";
 import sinon from "sinon";
