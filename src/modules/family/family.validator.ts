@@ -3,18 +3,15 @@ import validator from "../../utils/validator.js";
 import familyService from "./family.service.js";
 import { IIndividualAccountDto } from "../individual/individual.interface.js";
 import accountValidator from "../../utils/account.validator.js";
-import { TransferTuple } from "../../types/accounts.interface.js";
-import { ICreateFamily } from "./family.interface.js";
+//import { TransferTuple } from "../../types/accounts.interface.js";
+import { ICreateFamily, IUpdateMembers } from "./family.interface.js";
 import businessRepository from "../business/business.repository.js";
 import { validationResultsHandler } from "../../utils/validation.utils.js";
 import { IValidationResult } from "../../types/validation.interface.js";
 import individualRepository from "../individual/individual.repository.js";
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
-import {
-    AccountTypes,
-    BalanceTransfer,
-    IAccount,
-} from "../../types/accounts.interface.js";
+import { BalanceTransfer } from "../../types/accounts.interface.js";
+import { AccountTypes, IAccount, } from "../account/account.interface.js";
 import config from "../../config/config.js";
 const { FAMILY_MINIMUM_ALLOWED_BALANCE } = config;
 
@@ -39,7 +36,6 @@ class FamilyValidator {
         );
 
         const accounts = await Promise.all(pending_accounts);
-
         if (!validator.isExist(accounts)) {
             throw new BadRequest(
                 "one or more of the individual accounts doesn't exist"
@@ -72,7 +68,6 @@ class FamilyValidator {
             message:
                 "the transfered amount is not enough to open a family account",
         });
-
         const balance_tuples: BalanceTransfer[] = accounts.map((account, i) => [
             account.balance,
             family_dto.owners[i][1],
@@ -80,7 +75,6 @@ class FamilyValidator {
         validator.hasMinimalRemainingBalance(1000, balance_tuples);
 
         validationResultsHandler(results);
-
         next();
     };
 
@@ -102,29 +96,29 @@ class FamilyValidator {
 
     addFamilyMembers: RequestHandler = async (req, res, next) => {
         const results: IValidationResult[] = [];
-        const { individual_accounts } = req.body;
-        const accounts_tuples = individual_accounts as TransferTuple[];
-
+        const {individual_accounts} = req.body as IUpdateMembers;
+       
         results.push({
             is_valid: validator.required(req.params, ["id"]),
             message: "id property is missing",
         });
         results.push({
-            is_valid: !validator.isEmpty(accounts_tuples),
+            is_valid: !validator.isEmpty(individual_accounts),
             message: "individual accounts list is empty",
         });
+    
         results.push({
             is_valid: validator.isNumeric(req.params.id),
             message: "the provided id should be numeric",
         });
         results.push({
-            is_valid: accounts_tuples.every((account) =>
+            is_valid: individual_accounts.every((account) =>
                 validator.isNumeric(account[0])
             ),
             message: "the provided accounts IDs should be numeric",
         });
         results.push({
-            is_valid: accounts_tuples.every((account) =>
+            is_valid: individual_accounts.every((account) =>
                 validator.isPositive(account[1])
             ),
             message:
@@ -134,7 +128,6 @@ class FamilyValidator {
         const family_dto = await familyService.getFamilyById(
             Number(req.params.id)
         );
-
         const accounts = family_dto.owners as IIndividualAccountDto[];
 
         results.push({
@@ -164,8 +157,7 @@ class FamilyValidator {
 
     removeFamilyMembers: RequestHandler = async (req, res, next) => {
         const results: IValidationResult[] = [];
-        const { individual_accounts } = req.body;
-        const accounts_tuples = individual_accounts as TransferTuple[];
+        const {individual_accounts} = req.body as IUpdateMembers;
 
         const family_dto = await familyService.getFamilyById(
             Number(req.params.id)
@@ -174,12 +166,12 @@ class FamilyValidator {
         const owners = family_dto.owners as IIndividualAccountDto[];
 
         results.push({
-            is_valid: !validator.isEmpty(accounts_tuples),
+            is_valid: !validator.isEmpty(individual_accounts),
             message: "individual accounts list should not be empty",
         });
 
         results.push({
-            is_valid: accounts_tuples.every(
+            is_valid: individual_accounts.every(
                 (account) =>
                     validator.isNumeric(account[0]) && // id
                     validator.isNumeric(account[1]) && // amount
@@ -189,7 +181,7 @@ class FamilyValidator {
         });
 
         results.push({
-            is_valid: accounts_tuples.every((account) => {
+            is_valid: individual_accounts.every((account) => {
                 return owners.some(
                     (owner) => owner.individual_account_id === account[0]
                 );
@@ -244,7 +236,6 @@ class FamilyValidator {
                 "source account or destination account doesn't exist"
             );
         }
-
         results.push({
             is_valid: accountValidator.isActive([
                 source_account,
@@ -275,7 +266,6 @@ class FamilyValidator {
             ),
             message: "the destination account should be a business account",
         });
-
         const { amount } = req.body;
 
         results.push({
@@ -310,7 +300,7 @@ class FamilyValidator {
         });
 
         validationResultsHandler(results);
-
+        
         next();
     };
 }

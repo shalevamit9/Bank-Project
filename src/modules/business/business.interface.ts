@@ -1,9 +1,6 @@
-import {
-    AccountStatuses,
-    AccountTypes,
-    IAccount,
-    IAddress,
-} from "../../types/accounts.interface.js";
+import { AccountStatuses, AccountTypes, IAccount} from "../account/account.interface.js";
+import { IAddress } from "../address/address.interface.js";
+
 
 export interface IBusinessAccountDto extends IAccount {
     business_account_id: number;

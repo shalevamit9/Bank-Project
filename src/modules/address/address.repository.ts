@@ -1,6 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { db } from "../../db/mysql.connection.js";
-import { IAddress } from "../../types/accounts.interface";
+import { IAddress } from "./address.interface.js";
 import { ICreateAddress } from "./address.interface.js";
 
 class AddressRepository {

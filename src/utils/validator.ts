@@ -1,4 +1,5 @@
-import { BalanceTransfer, IAccount } from "../types/accounts.interface.js";
+import { BalanceTransfer } from "../types/accounts.interface.js";
+import { IAccount } from "../modules/account/account.interface.js";
 import { IIndexable } from "../types/indexable.interface.js";
 
 class Validator {

@@ -1,4 +1,5 @@
-import { AccountStatuses, AccountTypes, TransferTuple, IAccount } from "../../types/accounts.interface.js";
+import { TransferTuple } from "../../types/accounts.interface.js";
+import { AccountStatuses, AccountTypes, IAccount } from "../account/account.interface.js";
 import { IIndividualAccountDto } from "../individual/individual.interface.js";
 
 export interface IFamilyAccountDto extends IAccount {

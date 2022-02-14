@@ -1,6 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { db } from "../../db/mysql.connection.js";
-import { AccountStatuses, IAccount } from "../../types/accounts.interface.js";
+import { AccountStatuses, IAccount } from "./account.interface.js";
 import { ICreateAccount, StatusTuple } from "./account.interface.js";
 
 class AccountRepository {

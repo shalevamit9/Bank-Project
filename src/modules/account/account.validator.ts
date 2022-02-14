@@ -8,7 +8,7 @@ import {
     AccountStatuses,
     AccountTypes,
     IAccount,
-} from "../../types/accounts.interface.js";
+} from "./account.interface.js";
 
 class AccountValidator {
     isActive(accounts: IAccount[]) {

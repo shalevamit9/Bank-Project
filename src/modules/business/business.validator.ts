@@ -3,7 +3,7 @@ import validator from "../../utils/validator.js";
 import accountValidator from "../../utils/account.validator.js";
 import { IBusinessAccount } from "./business.interface.js";
 import businessRepository from "./business.repository.js";
-import { AccountTypes } from "../../types/accounts.interface.js";
+import { AccountTypes } from "../account/account.interface.js";
 import { IValidationResult } from "../../types/validation.interface.js";
 import { validationResultsHandler } from "../../utils/validation.utils.js";
 import individualRepository from "../individual/individual.repository.js";

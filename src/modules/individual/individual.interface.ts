@@ -1,9 +1,9 @@
 import {
-    AccountStatuses,
-    AccountTypes,
-    IAccount,
     IAddress,
-} from "../../types/accounts.interface.js";
+} from "../address/address.interface.js";
+import { AccountStatuses,
+    AccountTypes,
+    IAccount, } from "../account/account.interface.js";
 
 export interface IIndividualAccountDto extends IAccount {
     individual_account_id: number;

@@ -5,7 +5,8 @@ import addressService from "../../src/modules/address/address.service.js";
 import { ICreateIndividualDto, IIndividualAccount, IIndividualAccountDto } from "../../src/modules/individual/individual.interface.js";
 import individualRepository from "../../src/modules/individual/individual.repository.js";
 import individualService from "../../src/modules/individual/individual.service";
-import { AccountTypes, IAccount, IAddress } from "../../src/types/accounts.interface.js";
+import { AccountTypes, IAccount } from "../../src/modules/account/account.interface.js";
+import { IAddress } from "../../src/modules/address/address.interface.js";
 
 
 
@@ -49,7 +50,6 @@ describe("individual service file", () => {
         "region": "Center",
         "street_name": "Menachem Begin",
         "street_number": 45
-        
     };
 
     const create_individual_dto : ICreateIndividualDto = {

@@ -2,7 +2,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import individualValidator from "../../src/modules/individual/individual.validator.js";
 import { IIndividualAccountDto } from "../../src/modules/individual/individual.interface.js";
-import { AccountTypes } from "../../src/types/accounts.interface.js";
+import { AccountTypes } from "../../src/modules/account/account.interface.js";
 import validator from "../../src/utils/validator.js";
 import { Request,Response } from "express";
 import * as validation_utils from "../../src/utils/validation.utils.js";
@@ -70,6 +70,7 @@ describe("individual service file", () => {
         it("this function should validate get IIndividualAccountDto inputs", () => {            
             sinon.stub(validator, "required").returns(true);
             sinon.stub(validator, "isNumeric").returns(true);
+            sinon.stub(validationResultHandler, "validationResultsHandler").callsFake(() => 1);
             
             const req  = {} as Request;
             req.params = {id:"1"};

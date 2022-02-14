@@ -1,5 +1,5 @@
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
-import { AccountStatuses, IAccount } from "../../types/accounts.interface.js";
+import { AccountStatuses, IAccount } from "./account.interface.js";
 import { ICreateAccount } from "./account.interface.js";
 import accountRepository from "./account.repository.js";
 

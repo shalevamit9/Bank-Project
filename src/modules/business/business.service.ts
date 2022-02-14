@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { IAddress } from "../../types/accounts.interface.js";
+import { IAddress } from "../address/address.interface.js";
 import accountService from "../account/account.service.js";
 import addressService from "../address/address.service.js";
 import {
@@ -8,7 +8,7 @@ import {
     ICreateBusinessDto,
 } from "./business.interface.js";
 import businessRepository from "./business.repository.js";
-import { AccountTypes } from "../../types/accounts.interface.js";
+import { AccountTypes } from "../account/account.interface.js";
 import { IAccountFormatter } from "../../types/formatter.interface.js";
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
 import individualRepository from "../individual/individual.repository.js";
