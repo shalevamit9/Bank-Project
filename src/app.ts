@@ -15,6 +15,7 @@ import { logger } from "./middlewares/logger.middleware.js";
 import individualRouter from "./modules/individual/individual.router.js";
 import familyRouter from "./modules/family/family.router.js";
 import accountRouter from "./modules/account/account.router.js";
+import verifyAuth from "./middlewares/auth.middleware.js";
 
 const { HOST, PORT } = config;
 
@@ -48,6 +49,7 @@ class App {
     }
 
     private initializeRoutes() {
+        this.app.use(verifyAuth);
         const { API_PATH } = App;
         this.app.use(`${API_PATH}/business`, businessRouter.router);
         this.app.use(`${API_PATH}/individual`, individualRouter.router);
