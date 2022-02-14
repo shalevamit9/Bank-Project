@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { ResponseMessage } from "../../types/messages.interface.js";
 import individualService from "./individual.service.js";
 import { ICreateIndividualDto } from "./individual.interface.js";
+import { TransactionException } from "../../exceptions/transaction.exception.js";
 
 
 class IndividualController {
@@ -27,6 +28,28 @@ class IndividualController {
         };
         res.status(response.status).send(response);
     };
+
+    transferToFamily: RequestHandler = async(req, res) => {
+        const { amount } = req.body;
+
+        const transfer_result = await individualService.transferToFamily(
+            Number(req.params.source_id),
+            Number(req.params.destination_id),
+            Number(amount)
+        );
+
+        if (!transfer_result) {
+            throw new TransactionException();
+        }
+
+        const response: ResponseMessage = {
+            status: 200,
+            message: "success",
+            data: { transfer_result },
+        };
+
+        res.status(response.status).json(response);
+    }
 
 }
 

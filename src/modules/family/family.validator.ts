@@ -17,7 +17,7 @@ import {
     IAccount,
 } from "../../types/accounts.interface.js";
 
-const { FAMILY_MINIMUM_ALLOWED_BALANCE, INDIVIDUAL_MINIMUM_ALLOWED_BALANCE } = config;
+const { FAMILY_MINIMUM_ALLOWED_BALANCE, FAMILY_MAX_TRANSFER_LIMIT, INDIVIDUAL_MINIMUM_ALLOWED_BALANCE } = config;
 
 class FamilyValidator {
     createFamily: RequestHandler = async (req, res, next) => {
@@ -304,10 +304,10 @@ class FamilyValidator {
         });
         results.push({
             is_valid: validator.isLessThan(
-                FAMILY_MINIMUM_ALLOWED_BALANCE,
+                FAMILY_MAX_TRANSFER_LIMIT,
                 Number(amount)
             ),
-            message: `the maximal amount a family account can transfer at once is 5,000 ${source_account.currency}`, // define constant
+            message: `the maximal amount a family account can transfer at once is 5,000 ${source_account.currency}`,
         });
 
         validationResultsHandler(results);

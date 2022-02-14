@@ -142,7 +142,6 @@ class FamilyService {
         if (transfer_amount > FAMILY_MAX_TRANSFER_LIMIT) {
             throw new BadRequest("Cannot perform transfer - Invalid amount");
         }
-
         const source_account = await familyRepository.getFamilyById(source_id);
         const destination_account = await businessRepository.getBusinessById(
             destination_id
