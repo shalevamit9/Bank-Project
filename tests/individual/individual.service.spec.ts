@@ -96,7 +96,7 @@ describe("individual service file", () => {
         },
     };
 
-    context("createindividualAccount", () => {
+    context("#createindividualAccount()", () => {
         it("should be a function", () => {
             expect(individualService.createIndividualAccount).to.be.a("function");
         });
@@ -111,7 +111,7 @@ describe("individual service file", () => {
         });
     });
 
-    context("getindividualById", () => {
+    context("#getindividualById()", () => {
         it("should be a function", () => {
             expect(individualService.getIndividualById).to.be.a("function");
         });
@@ -124,7 +124,7 @@ describe("individual service file", () => {
         });
     });
 
-    context("getindividuals", () => {
+    context("#getindividuals()", () => {
         it("should be a function", () => {
             expect(individualService.getIndividuals).to.be.a("function");
         });
@@ -137,7 +137,7 @@ describe("individual service file", () => {
         });
     });
 
-    context("formatAccount", () => {
+    context("#formatAccount()", () => {
         it("should be a function", () => {
             expect(individualService.formatAccount).to.be.a("function");
         });

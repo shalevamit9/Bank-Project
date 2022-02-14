@@ -37,7 +37,7 @@ describe("individual service file", () => {
     };
 
     
-    context("createIndividual", () => {
+    context("#createIndividual()", () => {
         it("should be a function", () => {
             expect(individualValidator.createIndividual).to.be.a("function");
         });
@@ -62,7 +62,7 @@ describe("individual service file", () => {
         });
     });
 
-    context("getIndividual", () => {
+    context("#getIndividual()", () => {
         it("should be a function", () => {
             expect(individualValidator.getIndividual).to.be.a("function");
         });

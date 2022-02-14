@@ -39,8 +39,9 @@ class BusinessValidator {
             is_valid: validator.isValidLength(8, String(business_dto.company_id)),
             message: "company_id length is not 8",
         });
-        validationResultsHandler(results);
 
+        validationResultsHandler(results);
+        
         next();
     };
 
