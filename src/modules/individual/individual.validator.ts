@@ -16,7 +16,7 @@ class IndividualValidator {
         const results: IValidationResult[] = [];
         const individual_dto: IIndividualAccountDto = req.body;
         const mandatory_keys = [
-            "x",
+            "individual_id",
             "first_name",
             "last_name",
             "currency",
@@ -67,7 +67,7 @@ class IndividualValidator {
         });
 
         validationResultsHandler(results);
-        
+
         next();
     };
 }
