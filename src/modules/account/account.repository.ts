@@ -31,15 +31,7 @@ class AccountRepository {
         return account;
     }
 
-    async transfer(
-        source_account: IAccount,
-        destination_account: IAccount,
-        source_amount: number,
-        destination_amount: number
-    ) {
-        source_account.balance -= source_amount;
-        destination_account.balance += destination_amount;
-
+    async transfer(source_account: IAccount, destination_account: IAccount) {
         const [result] = (await db.query(
             `UPDATE accounts SET balance = CASE WHEN account_id = ? THEN ?
         WHEN account_id = ? THEN ?
@@ -62,9 +54,16 @@ class AccountRepository {
         const ids_placeholder = Array(accounts_ids.length).fill("?").join(",");
         const get_all_statuses = `SELECT account_id, status, type FROM accounts WHERE account_id IN (${ids_placeholder})`;
 
-        const [accounts] = (await db.query(get_all_statuses, accounts_ids)) as RowDataPacket[][];
+        const [accounts] = (await db.query(
+            get_all_statuses,
+            accounts_ids
+        )) as RowDataPacket[][];
 
-        return accounts.map((account) => [account.account_id, account.status, account.type]) as StatusTuple[];
+        return accounts.map((account) => [
+            account.account_id,
+            account.status,
+            account.type,
+        ]) as StatusTuple[];
     }
 
     async changeAccountsStatuses(

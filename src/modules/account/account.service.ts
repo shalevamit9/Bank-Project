@@ -34,11 +34,12 @@ class AccountService {
         source_amount: number,
         destination_amount: number
     ) {
+        source_account.balance -= source_amount;
+        destination_account.balance += destination_amount;
+
         const isTransfered = await accountRepository.transfer(
             source_account,
-            destination_account,
-            source_amount,
-            destination_amount
+            destination_account
         );
         if (!isTransfered) return null;
 
