@@ -46,10 +46,10 @@ class App {
         this.app.use(attachRequestId);
         this.app.use(logger(App.REQUESTS_LOG_PATH));
         this.app.use(express.json());
+        this.app.use(verifyAuth);
     }
 
     private initializeRoutes() {
-        this.app.use(verifyAuth);
         const { API_PATH } = App;
         this.app.use(`${API_PATH}/business`, businessRouter.router);
         this.app.use(`${API_PATH}/individual`, individualRouter.router);

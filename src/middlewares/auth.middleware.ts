@@ -15,23 +15,31 @@ interface IMerchant {
 const verifyAuth: RequestHandler = raw(async (req, res, next) => {
     const secret_key_hash = req.headers["secret_key_hash"] as string;
     const access_key = req.headers["access_key"];
+    const auth_salt = req.headers["auth_salt"] as string;
+    if (!auth_salt || !secret_key_hash || !access_key) {
+        throw new UnauthorizedException();
+    }
 
-    const [query_data] = (await db.query(
+    const [merchants] = (await db.query(
         `SELECT *
         FROM merchants
         WHERE access_key = ?`,
         [access_key]
     )) as RowDataPacket[][];
 
-    const merchant = query_data[0] as IMerchant;
+    const merchant = merchants[0] as IMerchant;
+    if (!merchant) throw new UnauthorizedException();
+
+    const body =
+        Object.keys(req.body as object).length > 0
+            ? JSON.stringify(req.body)
+            : "";
     const hash = crypto
         .createHmac("sha256", merchant.secret_key)
-        .update(JSON.stringify(req.body))
+        .update(`${auth_salt}${body}`)
         .digest("hex");
 
-    if (hash !== secret_key_hash) {
-        throw new UnauthorizedException();
-    }
+    if (hash !== secret_key_hash) throw new UnauthorizedException();
 
     next();
 });
