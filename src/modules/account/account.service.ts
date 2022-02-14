@@ -1,6 +1,10 @@
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
-import { AccountStatuses, IAccount } from "../../types/accounts.interface.js";
-import { ICreateAccount } from "./account.interface.js";
+import {
+    AccountStatuses,
+    AccountTypes,
+    IAccount,
+} from "../../types/accounts.interface.js";
+import { ActivationTuple, ICreateAccount } from "./account.interface.js";
 import accountRepository from "./account.repository.js";
 
 export interface ITransaction {
@@ -57,13 +61,45 @@ class AccountService {
         return transaction;
     }
 
-    async changeAccountsStatuses(accounts_ids: number[], action: string) {
+    async changeAccountsStatuses(
+        accounts_ids: ActivationTuple[],
+        action: string
+    ) {
         const status =
             action === "activate"
                 ? AccountStatuses.Active
                 : AccountStatuses.Inactive;
+
+        const individual_accounts_ids = accounts_ids.reduce(
+            (acc, account_tuple) => {
+                if (account_tuple[1] !== AccountTypes.Individual) return acc;
+                acc.push(account_tuple[0]);
+                return acc;
+            },
+            [] as number[]
+        );
+
+        const business_accounts_ids = accounts_ids.reduce(
+            (acc, account_tuple) => {
+                if (account_tuple[1] !== AccountTypes.Business) return acc;
+                acc.push(account_tuple[0]);
+                return acc;
+            },
+            [] as number[]
+        );
+
+        if (
+            individual_accounts_ids.length + business_accounts_ids.length !==
+            accounts_ids.length
+        ) {
+            throw new BadRequest(
+                "Please provide only valid accounts (family accounts are not allowed)"
+            );
+        }
+
         const status_changed = await accountRepository.changeAccountsStatuses(
-            accounts_ids,
+            individual_accounts_ids,
+            business_accounts_ids,
             status
         );
 

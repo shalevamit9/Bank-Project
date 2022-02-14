@@ -16,7 +16,6 @@ import {
     TransferTuple,
 } from "../../types/accounts.interface.js";
 
-
 const { FAMILY_MAX_TRANSFER_LIMIT } = config;
 class FamilyService {
     async createFamilyAccount(family_data: ICreateFamily) {
@@ -74,9 +73,9 @@ class FamilyService {
         accounts_to_add: TransferTuple[],
         details_level = "full"
     ) {
-        const amount_to_add = accounts_to_add
-            .map((account) => account[1])
-            .reduce((total_amount, amount) => amount + total_amount, 0);
+        const amount_to_add = accounts_to_add.reduce((total, account) => {
+            return total + account[1];
+        }, 0);
 
         await familyRepository.addMembersToFamily(
             family_id,
@@ -97,9 +96,9 @@ class FamilyService {
         accounts_to_remove: TransferTuple[],
         details_level = "full"
     ) {
-        const amount_to_remove = accounts_to_remove
-            .map((account) => account[1])
-            .reduce((total_amount, amount) => amount + total_amount, 0);
+        const amount_to_remove = accounts_to_remove.reduce((total, account) => {
+            return total + account[1];
+        }, 0);
 
         await familyRepository.removeMembersFromFamily(
             family_id,

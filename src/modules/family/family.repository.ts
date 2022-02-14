@@ -155,7 +155,7 @@ class FamilyRepository {
             if (
                 current_balance - amount_to_remove < 0 ||
                 (owners_left_after_removal > 0 &&
-                    current_balance - amount_to_remove < FAMILY_MINIMUM_ALLOWED_BALANCE) // define constant
+                    current_balance - amount_to_remove < FAMILY_MINIMUM_ALLOWED_BALANCE)
             ) {
                 throw new BadRequest(
                     "can't remove family members! remaining balance is invalid."
