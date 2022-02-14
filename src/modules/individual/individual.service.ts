@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import individualRepository from "./individual.repository.js";
 import {
     ICreateIndividualDto,

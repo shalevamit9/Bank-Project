@@ -138,14 +138,15 @@ class FamilyService {
         destination_id: number,
         transfer_amount: number
     ) {
-        const source_account = await familyRepository.getFamilyById(source_id);
-        const destination_account = await businessRepository.getBusinessById(
-            destination_id
-        );
 
         if (transfer_amount > FAMILY_MAX_TRANSFER_LIMIT) {
             throw new BadRequest("Cannot perform transfer - Invalid amount");
         }
+
+        const source_account = await familyRepository.getFamilyById(source_id);
+        const destination_account = await businessRepository.getBusinessById(
+            destination_id
+        );
 
         const transfer_result = await accountService.transfer(
             source_account,

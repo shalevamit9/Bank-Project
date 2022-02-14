@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { db } from "../../db/mysql.connection.js";
 import {

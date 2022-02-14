@@ -1,9 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/unbound-method */
+
 import { expect } from "chai";
 import sinon from "sinon";
 import { ICreateAccount } from "../../src/modules/account/account.interface.js";
-import accountService from "../../src/modules/account/account.service.js";
+import accountRepository from "../../src/modules/account/account.repository.js";
+import accountService, {
+    ITransaction,
+} from "../../src/modules/account/account.service.js";
+import businessRepository from "../../src/modules/business/business.repository.js";
 import {
     ICreateFamily,
     IFamilyAccountDto,
@@ -18,6 +21,7 @@ import individualService from "../../src/modules/individual/individual.service.j
 import { AccountTypes, IAccount } from "../../src/types/accounts.interface.js";
 
 describe("Family Service Functions:", () => {
+    // REDUNDANT!! this functio implements no logic. only calls other functions!
     context("#createFamilyAccount()", () => {
         const create_valid_account1: ICreateFamily = {
             currency: "USD",
@@ -56,10 +60,6 @@ describe("Family Service Functions:", () => {
             familyService,
             "addFamilyMembers"
         );
-
-        it("should be a function", () => {
-            expect(familyService.createFamilyAccount).to.be.a("function");
-        });
 
         // REDUNDANT!! this functio implements no logic. only calls other functions!
         it("should create a family object", async () => {
@@ -202,8 +202,14 @@ describe("Family Service Functions:", () => {
 
         it("should return the family details", async () => {
             console.log("format_account_callback: ", format_account_callback);
-            console.log("callback.firstCall: ", format_account_callback.firstCall);
-            console.log("callback.secondCall.args[0]: ", format_account_callback.secondCall);
+            console.log(
+                "callback.firstCall: ",
+                format_account_callback.firstCall
+            );
+            console.log(
+                "callback.secondCall.args[0]: ",
+                format_account_callback.secondCall
+            );
 
             get_short_stub.resolves(short_family);
             get_full_stub.resolves(owners);
@@ -220,11 +226,14 @@ describe("Family Service Functions:", () => {
             );
 
             console.log("format_account_callback: ", format_account_callback);
-            console.log("callback.firstCall: ", format_account_callback.firstCall);
-            console.log("callback.secondCall.args[0]: ", format_account_callback.secondCall);
-
-
-
+            console.log(
+                "callback.firstCall: ",
+                format_account_callback.firstCall
+            );
+            console.log(
+                "callback.secondCall.args[0]: ",
+                format_account_callback.secondCall
+            );
         });
     });
 
@@ -241,10 +250,12 @@ describe("Family Service Functions:", () => {
     });
 
     context("#closeFamilyAccount()", () => {
-        // afterEach(() => {
-        //     get_by_id_stub.restore();
-        //     close_account_stub.restore();
-        // });
+        // DONE
+        after(() => {
+            sinon.restore();
+            //     get_by_id_stub.restore();
+            //     close_account_stub.restore();
+        });
 
         const valid_family: IFamilyAccountDto = {
             family_account_id: 23,
@@ -279,14 +290,12 @@ describe("Family Service Functions:", () => {
             owners: [],
         };
 
-        const get_by_id_stub = sinon.stub(familyService, "getFamilyById"); // .resolves(family_obj);
-        // .returns(Promise.resolve(family_obj));
+        const get_by_id_stub = sinon.stub(familyService, "getFamilyById");
 
         const close_account_stub = sinon.stub(
             familyRepository,
             "closeFamilyAccount"
-        ); // .resolves(true);
-        // .returns(Promise.resolve(true));
+        );
 
         it("should throw an error when there are still owners left in the family", async () => {
             get_by_id_stub.resolves(invalid_owners_family);
@@ -320,9 +329,75 @@ describe("Family Service Functions:", () => {
         });
     });
 
-    context("transferToBusiness", () => {
-        it("should be a function", () => {
-            expect(familyService.transferToBusiness).to.be.a("function");
+    context("#transferToBusiness()", () => {
+        after(() => {
+            sinon.restore();
+        });
+
+        const source_account = {
+            family_account_id: 22,
+            context: "morgage",
+            account_id: 29,
+            currency: "ILS",
+            balance: 55000,
+            status: 1,
+            type: AccountTypes.Family,
+        };
+
+        const destination_account = {
+            business_account_id: 4,
+            company_id: 10123758,
+            company_name: "Microsoft",
+            context: "Microsoft",
+            account_id: 36,
+            currency: "ILS",
+            balance: 700000,
+            status: 1,
+            type: AccountTypes.Business,
+            address_id: 1,
+            city: "Alderetes",
+            country_code: "AR",
+            country_name: "147",
+            postal_code: 4178,
+            region: "Jeziora Wielkie",
+            street_name: "Jana",
+            street_number: 7,
+        };
+
+        const transfer_response: ITransaction = {
+            source_account: {
+                account_id: 29,
+                balance: 53000,
+                currency: "ILS",
+            },
+            destination_account: {
+                account_id: 36,
+                balance: 702000,
+                currency: "ILS",
+            },
+        };
+
+        const get_family_stub = sinon.stub(familyRepository, "getFamilyById");
+        const get_business_stub = sinon.stub(
+            businessRepository,
+            "getBusinessById"
+        );
+        const account_repo_transfer_stub = sinon
+            .stub(accountRepository, "transfer");
+            // .resolves(true);
+        const transfer_spy = sinon.spy(accountService, "transfer");
+
+        it("should throw an error when maximal transfer amount limit is exceeded", async () => {
+            // expect(await familyService.transferToBusiness(x, y, z)).to.deep.equal("Bad Request - Cannot perform transfer - Invalid amount");
+        });
+
+        it("should return the updated accounts details after the transfer", async () => {
+            get_family_stub.resolves(source_account);
+            get_business_stub.resolves(destination_account);
+            account_repo_transfer_stub.resolves(true);
+            expect(
+                await familyService.transferToBusiness(22, 4, 2000)
+            ).to.deep.equal(transfer_response);
         });
     });
 });

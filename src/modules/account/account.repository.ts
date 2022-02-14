@@ -31,15 +31,7 @@ class AccountRepository {
         return account;
     }
 
-    async transfer(
-        source_account: IAccount,
-        destination_account: IAccount,
-        source_amount: number,
-        destination_amount: number
-    ) {
-        source_account.balance -= source_amount;
-        destination_account.balance += destination_amount;
-
+    async transfer(source_account: IAccount, destination_account: IAccount) {
         const [result] = (await db.query(
             `UPDATE accounts SET balance = CASE WHEN account_id = ? THEN ?
         WHEN account_id = ? THEN ?
