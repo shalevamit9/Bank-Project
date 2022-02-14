@@ -74,12 +74,9 @@ class FamilyService {
         accounts_to_add: TransferTuple[],
         details_level = "full"
     ) {
-        const amounts_arr = accounts_to_add.map((account) => account[1]);
-
-        //use one reduce
-        const amount_to_add = amounts_arr.reduce(
-            (amount, total_amount) => amount + total_amount
-        );
+        const amount_to_add = accounts_to_add
+            .map((account) => account[1])
+            .reduce((total_amount, amount) => amount + total_amount, 0);
 
         await familyRepository.addMembersToFamily(
             family_id,
