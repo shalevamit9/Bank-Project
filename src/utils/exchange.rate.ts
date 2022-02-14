@@ -18,3 +18,7 @@ export async function getRate(base: string, currency: string): Promise<number> {
 
     return data.rates[currency];
 }
+
+const exchange_rate_utils = { getRate };
+
+export default exchange_rate_utils;
