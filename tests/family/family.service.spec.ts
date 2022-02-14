@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { expect } from "chai";
 import familyService from "../../src/modules/family/family.service";
 

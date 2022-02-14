@@ -16,12 +16,11 @@ class IndividualValidator {
         const results: IValidationResult[] = [];
         const individual_dto: IIndividualAccountDto = req.body;
         const mandatory_keys = [
-            "individual_id",
+            "x",
             "first_name",
             "last_name",
             "currency",
         ];
-
         results.push({
             is_valid: validator.required(individual_dto, mandatory_keys),
             message: `At least one of the following properties are missing [${mandatory_keys.toString()}]`,
@@ -47,7 +46,6 @@ class IndividualValidator {
             ),
             message: "individual_id is not greater than 1000000",
         });
-
         validationResultsHandler(results);
 
         next();
@@ -69,7 +67,7 @@ class IndividualValidator {
         });
 
         validationResultsHandler(results);
-
+        
         next();
     };
 }

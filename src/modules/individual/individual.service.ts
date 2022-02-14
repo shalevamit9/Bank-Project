@@ -59,14 +59,11 @@ class IndividualService
             account_id: account.account_id,
         });
 
-        // const individual_dto: IIndividualAccount = { ...individual };
-        // if (address) individual_dto.address = address;
-
         const individual_dto = this.formatAccount(individual);
         return individual_dto;
     };
 
-    formatAccount(individual: IIndividualAccount) {
+    formatAccount = (individual: IIndividualAccount) => {
         const individual_dto: IIndividualAccountDto = {
             account_id: individual.account_id,
             balance: individual.balance,

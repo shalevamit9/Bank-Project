@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { expect } from "chai";
 import connectDb from "../../src/db/mysql.connection";
 import familyRepository from "../../src/modules/family/family.repository";

@@ -24,6 +24,7 @@ const verifyAuth: RequestHandler = raw(async (req, res, next) => {
     )) as RowDataPacket[][];
 
     const merchant = query_data[0] as IMerchant;
+
     const hash = crypto
         .createHmac("sha256", merchant.secret_key)
         .update(JSON.stringify(req.body))
