@@ -2,6 +2,7 @@ import express from "express";
 import businessController from "./business.controller.js";
 import raw from "../../middlewares/route.async.wrapper.js";
 import businessValidator from "./business.validator.js";
+import { idempotent } from "../../middlewares/idempotency.middleware.js";
 
 class BusinessRouter {
     readonly router = express.Router();
@@ -15,6 +16,7 @@ class BusinessRouter {
 
         this.router.post(
             "/",
+            raw(idempotent),
             raw(businessValidator.createBusiness),
             raw(businessController.createBusinessAccount)
         );

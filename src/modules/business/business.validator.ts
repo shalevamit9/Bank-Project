@@ -10,13 +10,10 @@ import individualRepository from "../individual/individual.repository.js";
 import config from "../../config/config.js";
 
 class BusinessValidator {
-    business_minimum_allowed_balance : number = config.BUSINESS_MINIMUM_ALLOWED_BALANCE;
+    business_minimum_allowed_balance: number =
+        config.BUSINESS_MINIMUM_ALLOWED_BALANCE;
 
-    createBusiness: RequestHandler = (
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
+    createBusiness: RequestHandler = (req, res, next) => {
         const results: IValidationResult[] = [];
         const business_dto: IBusinessAccount = req.body;
         const mandatory_keys = ["company_id", "company_name", "currency"];
@@ -36,7 +33,10 @@ class BusinessValidator {
             message: "company_id is not greater than 10000000",
         });
         results.push({
-            is_valid: validator.isValidLength(8, String(business_dto.company_id)),
+            is_valid: validator.isValidLength(
+                8,
+                String(business_dto.company_id)
+            ),
             message: "company_id length is not 8",
         });
         validationResultsHandler(results);
@@ -44,11 +44,7 @@ class BusinessValidator {
         next();
     };
 
-    getBusiness: RequestHandler = (
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
+    getBusiness: RequestHandler = (req, res, next) => {
         const results: IValidationResult[] = [];
         results.push({
             is_valid: validator.required(req.params, ["id"]),
@@ -110,9 +106,10 @@ class BusinessValidator {
             message: "amount is not positive",
         });
         results.push({
-            is_valid: validator.hasMinimalRemainingBalance(this.business_minimum_allowed_balance, [
-                [source_account.balance, amount],
-            ]),
+            is_valid: validator.hasMinimalRemainingBalance(
+                this.business_minimum_allowed_balance,
+                [[source_account.balance, amount]]
+            ),
             message: "source account doesn't have enough remaining balance",
         });
         validationResultsHandler(results);
@@ -168,9 +165,10 @@ class BusinessValidator {
             message: "amount is not positive",
         });
         results.push({
-            is_valid: validator.hasMinimalRemainingBalance(this.business_minimum_allowed_balance, [
-                [source_account.balance, amount],
-            ]),
+            is_valid: validator.hasMinimalRemainingBalance(
+                this.business_minimum_allowed_balance,
+                [[source_account.balance, amount]]
+            ),
             message: "source account doesn't have enough remaining balance",
         });
         validationResultsHandler(results);
@@ -219,9 +217,10 @@ class BusinessValidator {
             message: "amount is not positive",
         });
         results.push({
-            is_valid: validator.hasMinimalRemainingBalance(this.business_minimum_allowed_balance, [
-                [source_account.balance, amount],
-            ]),
+            is_valid: validator.hasMinimalRemainingBalance(
+                this.business_minimum_allowed_balance,
+                [[source_account.balance, amount]]
+            ),
             message: "source account doesn't have enough remaining balance",
         });
         validationResultsHandler(results);

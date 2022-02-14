@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { TransactionException } from "../../exceptions/transaction.exception.js";
 import { UrlNotFoundException } from "../../exceptions/urlNotFound.exception.js";
 import { ResponseMessage } from "../../types/messages.interface.js";
+import idempotencyService from "../idempotency/idempotency.service.js";
 import { ICreateBusinessDto } from "./business.interface.js";
 import businessService from "./business.service.js";
 
@@ -22,7 +23,7 @@ class BusinessController {
     };
 
     createBusinessAccount: RequestHandler = async (req, res) => {
-        const create_business_dto: ICreateBusinessDto = req.body;
+        const create_business_dto: ICreateBusinessDto = { ...req.body };
         const business = await businessService.createBusinessAccount(
             create_business_dto
         );
@@ -32,6 +33,16 @@ class BusinessController {
             message: "success",
             data: { business },
         };
+        await idempotencyService.createIdempotency({
+            access_key: req.headers["access_key"] as string,
+            idempotency_key: req.headers["idempotency_key"] as string,
+            request_params: JSON.stringify({
+                ...req.body,
+                ...req.params,
+                ...req.query,
+            }),
+            response: JSON.stringify(response),
+        });
 
         res.status(response.status).json(response);
     };

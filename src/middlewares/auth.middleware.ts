@@ -11,7 +11,6 @@ interface IMerchant {
     access_key: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
 const verifyAuth: RequestHandler = raw(async (req, res, next) => {
     const secret_key_hash = req.headers["secret_key_hash"] as string;
     const access_key = req.headers["access_key"];
