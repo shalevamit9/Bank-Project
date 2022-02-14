@@ -67,7 +67,7 @@ describe("Business Validator Functions:", () => {
             expect(businessValidator.createBusiness).to.be.a("function");
         });
 
-        it("", async () => {
+        it("create business validation middleware test", async () => {
             sinon.stub(validator, "required").returns(true);
             sinon.stub(validator, "isNumeric").returns(true);
             sinon.stub(validator, "isGreaterThan").returns(true);
@@ -91,7 +91,7 @@ describe("Business Validator Functions:", () => {
             expect(businessValidator.createBusiness).to.be.a("function");
         });
 
-        it("", async () => {
+        it("get business validation middleware test", async () => {
             sinon.stub(validator, "required").returns(true);
             sinon.stub(validator, "isNumeric").returns(true);
             sinon.stub(validationResultHandler, "validationResultsHandler").callsFake(() => 1);
@@ -113,7 +113,7 @@ describe("Business Validator Functions:", () => {
             expect(businessValidator.createBusiness).to.be.a("function");
         });
 
-        it("", async () => {
+        it("transfer to business validation middleware test", async () => {
             sinon.stub(businessRepository, "getBusinessById").resolves(business_account_source);
             sinon.stub(validator, "isExist").returns(true);
             sinon.stub(accountValidator, "isActive").returns(true);
@@ -142,7 +142,7 @@ describe("Business Validator Functions:", () => {
             expect(businessValidator.createBusiness).to.be.a("function");
         });
 
-        it("", async () => {
+        it("transfer to individual validation middleware test", async () => {
             sinon.stub(businessRepository, "getBusinessById").resolves(business_account_source);
             sinon.stub(individualRepository, "getIndividualById").resolves(individual_account);
             sinon.stub(validator, "isExist").returns(true);
@@ -172,7 +172,7 @@ describe("Business Validator Functions:", () => {
             expect(businessValidator.createBusiness).to.be.a("function");
         });
 
-        it("", async () => {
+        it("FX transfer to business validation middleware test", async () => {
             sinon.stub(businessRepository, "getBusinessById").resolves(business_account_source);
             sinon.stub(validator, "isExist").returns(true);
             sinon.stub(accountValidator, "isActive").returns(true);
