@@ -19,7 +19,6 @@ export const idempotent: RequestHandler = async (req, res, next) => {
         request_params,
         JSON.parse(idempotency.request_params)
     );
-    console.log({ idempotency });
     if (!is_deep_equal) throw new PreconditionException();
     const response: ResponseMessage = JSON.parse(idempotency.response);
     return res.status(response.status).json(response);
