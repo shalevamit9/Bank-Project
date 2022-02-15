@@ -132,6 +132,29 @@ class FamilyValidator {
                 "all amounts to be transferred from individual accounts should be positive",
         });
 
+        const individual_ids_to_add = individual_accounts.map(
+            (account) => account[0]
+        );
+        const individuals = await individualRepository.getIndividuals(
+            individual_ids_to_add
+        );
+        if (!validator.isExist(individuals)) {
+            throw new BadRequest(
+                "one or more of the individual accounts doesn't exist"
+            );
+        }
+        const balance_tuples: BalanceTransfer[] = individuals.map(
+            (account, i) => [account.balance, individual_accounts[i][1]]
+        );
+        results.push({
+            is_valid: validator.hasMinimalRemainingBalance(
+                INDIVIDUAL_MINIMUM_ALLOWED_BALANCE,
+                balance_tuples
+            ),
+            message:
+                "one or more of the individual accounts doesn't have enough remaining balance to transfer",
+        });
+
         const family_dto = await familyService.getFamilyById(
             Number(req.params.id)
         );
@@ -165,6 +188,18 @@ class FamilyValidator {
     removeFamilyMembers: RequestHandler = async (req, res, next) => {
         const results: IValidationResult[] = [];
         const { individual_accounts } = req.body as IUpdateMembers;
+
+        const individual_ids_to_remove = individual_accounts.map(
+            (account) => account[0]
+        );
+        const individuals = await individualRepository.getIndividuals(
+            individual_ids_to_remove
+        );
+        if (!validator.isExist(individuals)) {
+            throw new BadRequest(
+                "one or more of the individual accounts doesn't exist"
+            );
+        }
 
         const family_dto = await familyService.getFamilyById(
             Number(req.params.id)

@@ -78,7 +78,7 @@ describe("Family Service Functions:", () => {
             },
         ],
     };
-    // REDUNDANT!! this functio implements no logic. only calls other functions!
+
     context("#createFamilyAccount()", () => {
         afterEach(() => {
             sinon.restore();
@@ -112,17 +112,6 @@ describe("Family Service Functions:", () => {
             type: AccountTypes.Family,
         };
 
-        // const create_account_stub = sinon.stub(accountService, "createAccount");
-        // const create_family_account_stub = sinon.stub(
-        //     familyRepository,
-        //     "createFamilyAccount"
-        // );
-        // const add_family_members_stub = sinon.stub(
-        //     familyService,
-        //     "addFamilyMembers"
-        // );
-
-        // REDUNDANT!! this functio implements no logic. only calls other functions!
         it("should create a family object", async () => {
             sinon.stub(accountService, "createAccount").resolves(account_obj);
             sinon.stub(familyRepository, "createFamilyAccount").resolves(24);
@@ -446,8 +435,6 @@ describe("Family Service Functions:", () => {
                 currency: "ILS",
             },
         };
-
-        // const transfer_spy = sinon.spy(accountService, "transfer");
 
         it("should throw an error when maximal transfer amount limit is exceeded", async () => {
             sinon

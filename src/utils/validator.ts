@@ -35,7 +35,7 @@ class Validator {
     }
 
     isExist(arr: any[]) {
-        return arr.every(Boolean);
+        return arr.length > 0 && arr.every(Boolean);
     }
 
     hasMinSum(min: number, amounts: number[]) {
