@@ -9,6 +9,7 @@ import { IAddress } from "../../types/accounts.interface.js";
 import addressService from "../address/address.service.js";
 import accountService from "../account/account.service.js";
 import { AccountTypes } from "../../types/accounts.interface.js";
+import familyRepository from "../family/family.repository.js";
 
 class IndividualService
     implements IAccountFormatter<IIndividualAccount, IIndividualAccountDto>
@@ -59,11 +60,30 @@ class IndividualService
             account_id: account.account_id,
         });
 
-        // const individual_dto: IIndividualAccount = { ...individual };
-        // if (address) individual_dto.address = address;
-
         const individual_dto = this.formatAccount(individual);
         return individual_dto;
+    };
+
+    transferToFamily = async (
+        source_id: number,
+        destination_id: number,
+        transfer_amount: number
+    ) => {
+        const source_account = await individualRepository.getIndividualById(
+            source_id
+        );
+        const destination_account = await familyRepository.getFamilyById(
+            destination_id
+        );
+
+        const transfer_result = await accountService.transfer(
+            source_account,
+            destination_account,
+            transfer_amount,
+            transfer_amount
+        );
+
+        return transfer_result;
     };
 
     formatAccount(individual: IIndividualAccount) {

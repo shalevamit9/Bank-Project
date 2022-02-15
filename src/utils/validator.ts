@@ -34,8 +34,8 @@ class Validator {
         return input.length === length_to_validate;
     }
 
-    isExist(accounts: any[]) {
-        return accounts.every(Boolean);
+    isExist(arr: any[]) {
+        return arr.every(Boolean);
     }
 
     hasMinSum(min: number, amounts: number[]) {

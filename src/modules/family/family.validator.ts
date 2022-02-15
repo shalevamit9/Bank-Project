@@ -1,8 +1,9 @@
 import { RequestHandler } from "express";
 import validator from "../../utils/validator.js";
 import familyService from "./family.service.js";
+import config from "../../config/config.js";
 import { IIndividualAccountDto } from "../individual/individual.interface.js";
-import accountValidator from "../../utils/account.validator.js";
+import accountValidatorUtil from "../../utils/account.validation.utils.js";
 import { TransferTuple } from "../../types/accounts.interface.js";
 import { ICreateFamily } from "./family.interface.js";
 import businessRepository from "../business/business.repository.js";
@@ -15,8 +16,8 @@ import {
     BalanceTransfer,
     IAccount,
 } from "../../types/accounts.interface.js";
-import config from "../../config/config.js";
-const { FAMILY_MINIMUM_ALLOWED_BALANCE } = config;
+
+const { FAMILY_MINIMUM_ALLOWED_BALANCE, FAMILY_MAX_TRANSFER_LIMIT, INDIVIDUAL_MINIMUM_ALLOWED_BALANCE } = config;
 
 class FamilyValidator {
     createFamily: RequestHandler = async (req, res, next) => {
@@ -46,18 +47,18 @@ class FamilyValidator {
             );
         }
         results.push({
-            is_valid: accountValidator.isActive(accounts),
+            is_valid: accountValidatorUtil.isActive(accounts),
             message: "one or more of the individual accounts is not active",
         });
         results.push({
-            is_valid: accountValidator.isTypeOf(
+            is_valid: accountValidatorUtil.isTypeOf(
                 [AccountTypes.Individual],
                 accounts
             ),
             message: "at least one of the accounts is not of type individual",
         });
         results.push({
-            is_valid: accountValidator.isSameCurrency(
+            is_valid: accountValidatorUtil.isSameCurrency(
                 family_dto.currency,
                 accounts
             ),
@@ -77,7 +78,7 @@ class FamilyValidator {
             account.balance,
             family_dto.owners[i][1],
         ]);
-        validator.hasMinimalRemainingBalance(1000, balance_tuples);
+        validator.hasMinimalRemainingBalance(INDIVIDUAL_MINIMUM_ALLOWED_BALANCE, balance_tuples);
 
         validationResultsHandler(results);
 
@@ -138,7 +139,7 @@ class FamilyValidator {
         const accounts = family_dto.owners as IIndividualAccountDto[];
 
         results.push({
-            is_valid: accountValidator.isSameCurrency(
+            is_valid: accountValidatorUtil.isSameCurrency(
                 family_dto.currency,
                 accounts
             ),
@@ -146,14 +147,14 @@ class FamilyValidator {
                 "at least one of the individual accounts doesn't have the same currency as the family",
         });
         results.push({
-            is_valid: accountValidator.isTypeOf(
+            is_valid: accountValidatorUtil.isTypeOf(
                 [AccountTypes.Individual],
                 accounts
             ),
             message: "at least one of the accounts is not of type individual",
         });
         results.push({
-            is_valid: accountValidator.isActive(accounts),
+            is_valid: accountValidatorUtil.isActive(accounts),
             message: "at least one of the users is not active",
         });
 
@@ -246,7 +247,7 @@ class FamilyValidator {
         }
 
         results.push({
-            is_valid: accountValidator.isActive([
+            is_valid: accountValidatorUtil.isActive([
                 source_account,
                 destination_account,
                 ...owners,
@@ -254,14 +255,14 @@ class FamilyValidator {
             message: "at least one of the accounts is not active",
         });
         results.push({
-            is_valid: accountValidator.isTypeOf(
+            is_valid: accountValidatorUtil.isTypeOf(
                 [AccountTypes.Family],
                 [source_account]
             ),
             message: "the source account should be a family account",
         });
         results.push({
-            is_valid: accountValidator.isTypeOf(
+            is_valid: accountValidatorUtil.isTypeOf(
                 [AccountTypes.Individual],
                 owners
             ),
@@ -269,7 +270,7 @@ class FamilyValidator {
                 "at least one user in the list of users is not of type individual",
         });
         results.push({
-            is_valid: accountValidator.isTypeOf(
+            is_valid: accountValidatorUtil.isTypeOf(
                 [AccountTypes.Business],
                 [destination_account]
             ),
@@ -287,7 +288,7 @@ class FamilyValidator {
             message: "the transfer amount should be positive",
         });
         results.push({
-            is_valid: accountValidator.isSameCurrency(source_account.currency, [
+            is_valid: accountValidatorUtil.isSameCurrency(source_account.currency, [
                 destination_account,
             ]),
             message:
@@ -303,10 +304,10 @@ class FamilyValidator {
         });
         results.push({
             is_valid: validator.isLessThan(
-                FAMILY_MINIMUM_ALLOWED_BALANCE,
+                FAMILY_MAX_TRANSFER_LIMIT,
                 Number(amount)
             ),
-            message: `the maximal amount a family account can transfer at once is 5,000 ${source_account.currency}`, // define constant
+            message: `the maximal amount a family account can transfer at once is 5,000 ${source_account.currency}`,
         });
 
         validationResultsHandler(results);

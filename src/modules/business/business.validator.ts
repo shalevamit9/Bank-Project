@@ -1,6 +1,6 @@
 import { Request, Response, RequestHandler, NextFunction } from "express";
 import validator from "../../utils/validator.js";
-import accountValidator from "../../utils/account.validator.js";
+import accountValidatorUtil from "../../utils/account.validation.utils.js";
 import { IBusinessAccount } from "./business.interface.js";
 import businessRepository from "./business.repository.js";
 import { AccountTypes } from "../../types/accounts.interface.js";
@@ -78,18 +78,18 @@ class BusinessValidator {
         });
         const [source_account, destination_account] = accounts;
         results.push({
-            is_valid: accountValidator.isActive(accounts),
+            is_valid: accountValidatorUtil.isActive(accounts),
             message: "At least one account is not active",
         });
         results.push({
-            is_valid: accountValidator.isTypeOf(
+            is_valid: accountValidatorUtil.isTypeOf(
                 [AccountTypes.Business],
                 accounts
             ),
             message: "Both accounts have to be of type business",
         });
         results.push({
-            is_valid: accountValidator.isSameCurrency(source_account.currency, [
+            is_valid: accountValidatorUtil.isSameCurrency(source_account.currency, [
                 destination_account,
             ]),
             message: "Both accounts need to have the same currency",
@@ -136,11 +136,11 @@ class BusinessValidator {
         });
         const [source_account, destination_account] = accounts;
         results.push({
-            is_valid: accountValidator.isActive(accounts),
+            is_valid: accountValidatorUtil.isActive(accounts),
             message: "At least one account is not active",
         });
         results.push({
-            is_valid: accountValidator.isTypeOf(
+            is_valid: accountValidatorUtil.isTypeOf(
                 [AccountTypes.Business, AccountTypes.Individual],
                 accounts
             ),
@@ -148,7 +148,7 @@ class BusinessValidator {
                 "source can only be business account and destination can only be individual account",
         });
         results.push({
-            is_valid: accountValidator.isSameCurrency(source_account.currency, [
+            is_valid: accountValidatorUtil.isSameCurrency(source_account.currency, [
                 destination_account,
             ]),
             message: "Both accounts need to have the same currency",
@@ -195,11 +195,11 @@ class BusinessValidator {
         });
         const [source_account] = accounts;
         results.push({
-            is_valid: accountValidator.isActive(accounts),
+            is_valid: accountValidatorUtil.isActive(accounts),
             message: "At least one account is not active",
         });
         results.push({
-            is_valid: accountValidator.isTypeOf(
+            is_valid: accountValidatorUtil.isTypeOf(
                 [AccountTypes.Business],
                 accounts
             ),

@@ -1,3 +1,4 @@
+import config from "../../config/config.js";
 import { IAddress } from "../../types/accounts.interface.js";
 import accountService from "../account/account.service.js";
 import addressService from "../address/address.service.js";
@@ -12,7 +13,12 @@ import { IAccountFormatter } from "../../types/formatter.interface.js";
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
 import individualRepository from "../individual/individual.repository.js";
 import { getRate } from "../../utils/exchange.rate.js";
-import config from "../../config/config.js";
+
+const {
+    BUSINESS_MAX_TRANSFER_LIMIT_SAME_COMPANY,
+    BUSINESS_MAX_TRANSFER_LIMIT_OTHER_COMPANY,
+    BUSINESS_MAX_TRANSFER_LIMIT_INDIVIDUAL,
+} = config;
 
 class BusinessService
     implements IAccountFormatter<IBusinessAccount, IBusinessAccountDto>
@@ -78,9 +84,9 @@ class BusinessService
 
         const isValidTransfer =
             (source_account.company_id === destination_account.company_id &&
-                amount <= 10000) ||
+                amount <= BUSINESS_MAX_TRANSFER_LIMIT_SAME_COMPANY) ||
             (source_account.company_id !== destination_account.company_id &&
-                amount <= 1000);
+                amount <= BUSINESS_MAX_TRANSFER_LIMIT_OTHER_COMPANY);
         if (config.TRANSFER_AMOUNT_LIMITATION_FEATURE_FLAG && !isValidTransfer)
             throw new BadRequest("Passed Transfer Limit");
 
@@ -103,7 +109,8 @@ class BusinessService
             individualRepository.getIndividualById(destination_id),
         ]);
 
-        const isValidTransfer = amount <= 1000;
+        const isValidTransfer =
+            amount <= BUSINESS_MAX_TRANSFER_LIMIT_INDIVIDUAL;
         if (config.TRANSFER_AMOUNT_LIMITATION_FEATURE_FLAG && !isValidTransfer)
             throw new BadRequest("Passed Transfer Limit");
 
@@ -128,9 +135,9 @@ class BusinessService
 
         const isValidTransfer =
             (source_account.company_id === destination_account.company_id &&
-                amount <= 10000) ||
+                amount <= BUSINESS_MAX_TRANSFER_LIMIT_SAME_COMPANY) ||
             (source_account.company_id !== destination_account.company_id &&
-                amount <= 1000);
+                amount <= BUSINESS_MAX_TRANSFER_LIMIT_OTHER_COMPANY);
         if (config.TRANSFER_AMOUNT_LIMITATION_FEATURE_FLAG && !isValidTransfer)
             throw new BadRequest("Passed Transfer Limit");
 

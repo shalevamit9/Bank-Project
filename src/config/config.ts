@@ -19,6 +19,10 @@ interface IConfig {
     BUSINESS_MINIMUM_ALLOWED_BALANCE: number;
     FAMILY_MINIMUM_ALLOWED_BALANCE: number;
     TRANSFER_AMOUNT_LIMITATION_FEATURE_FLAG: boolean;
+    BUSINESS_MAX_TRANSFER_LIMIT_SAME_COMPANY: number;
+    BUSINESS_MAX_TRANSFER_LIMIT_OTHER_COMPANY: number;
+    BUSINESS_MAX_TRANSFER_LIMIT_INDIVIDUAL: number;
+    FAMILY_MAX_TRANSFER_LIMIT: number;
 }
 
 const config_file_path = path.join(process.cwd(), "config.json");

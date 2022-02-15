@@ -67,15 +67,38 @@ class AccountRepository {
     }
 
     async changeAccountsStatuses(
-        accounts_ids: number[],
+        individual_accounts_ids: number[],
+        business_accounts_ids: number[],
         status: AccountStatuses
     ) {
-        const ids_placeholder = Array(accounts_ids.length).fill("?").join(",");
-        const update_status = `UPDATE accounts SET status = ? WHERE account_id IN (${ids_placeholder})`;
+        let ids_placeholder = Array(individual_accounts_ids.length)
+            .fill("?")
+            .join(",");
 
-        const [result] = (await db.query(update_status, [
+        const update_individuals_status = `UPDATE accounts a
+        INNER JOIN individual_accounts ia ON a.account_id = ia.account_id
+        SET a.status = ?
+        WHERE ia.individual_account_id IN(${ids_placeholder});`;
+
+        let [result] = (await db.query(update_individuals_status, [
             status,
-            ...accounts_ids,
+            ...individual_accounts_ids,
+        ])) as ResultSetHeader[];
+        
+        if(!result.affectedRows) return false;
+
+        ids_placeholder = Array(business_accounts_ids.length)
+            .fill("?")
+            .join(",");
+
+        const update_business_status = `UPDATE accounts a
+        INNER JOIN business_accounts ba ON a.account_id = ba.account_id
+        SET a.status = ?
+        WHERE ba.business_account_id IN(${ids_placeholder});`;
+
+        [result] = (await db.query(update_business_status, [
+            status,
+            ...business_accounts_ids,
         ])) as ResultSetHeader[];
 
         return !!result.affectedRows;

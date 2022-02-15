@@ -22,7 +22,7 @@ import familyValidator from "../../src/modules/family/family.validator";
 
 /*
  * !!! in each describe - write: !!!
- *          after(sinon.restire);
+ *          after(sinon.restore);
  * 
  */
 // ================================
