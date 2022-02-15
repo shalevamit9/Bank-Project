@@ -33,16 +33,19 @@ class BusinessController {
             message: "success",
             data: { business },
         };
-        await idempotencyService.createIdempotency({
-            access_key: req.headers["access_key"] as string,
-            idempotency_key: req.headers["idempotency_key"] as string,
-            request_params: JSON.stringify({
-                ...req.body,
-                ...req.params,
-                ...req.query,
-            }),
-            response: JSON.stringify(response),
-        });
+
+        if (req.headers["idempotency_key"]) {
+            await idempotencyService.createIdempotency({
+                access_key: req.headers["access_key"] as string,
+                idempotency_key: req.headers["idempotency_key"] as string,
+                request_params: JSON.stringify({
+                    ...req.body,
+                    ...req.params,
+                    ...req.query,
+                }),
+                response: JSON.stringify(response),
+            });
+        }
 
         res.status(response.status).json(response);
     };
