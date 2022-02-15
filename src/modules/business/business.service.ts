@@ -12,6 +12,7 @@ import { IAccountFormatter } from "../../types/formatter.interface.js";
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
 import individualRepository from "../individual/individual.repository.js";
 import { getRate } from "../../utils/exchange.rate.js";
+import config from "../../config/config.js";
 
 class BusinessService
     implements IAccountFormatter<IBusinessAccount, IBusinessAccountDto>
@@ -80,7 +81,8 @@ class BusinessService
                 amount <= 10000) ||
             (source_account.company_id !== destination_account.company_id &&
                 amount <= 1000);
-        if (!isValidTransfer) throw new BadRequest("Passed Transfer Limit");
+        if (config.TRANSFER_AMOUNT_LIMITATION_FEATURE_FLAG && !isValidTransfer)
+            throw new BadRequest("Passed Transfer Limit");
 
         const transaction = await accountService.transfer(
             source_account,
@@ -102,7 +104,8 @@ class BusinessService
         ]);
 
         const isValidTransfer = amount <= 1000;
-        if (!isValidTransfer) throw new BadRequest("Passed Transfer Limit");
+        if (config.TRANSFER_AMOUNT_LIMITATION_FEATURE_FLAG && !isValidTransfer)
+            throw new BadRequest("Passed Transfer Limit");
 
         const transaction = await accountService.transfer(
             business_account,
@@ -128,7 +131,8 @@ class BusinessService
                 amount <= 10000) ||
             (source_account.company_id !== destination_account.company_id &&
                 amount <= 1000);
-        if (!isValidTransfer) throw new BadRequest("Passed Transfer Limit");
+        if (config.TRANSFER_AMOUNT_LIMITATION_FEATURE_FLAG && !isValidTransfer)
+            throw new BadRequest("Passed Transfer Limit");
 
         const rate = await getRate(
             source_account.currency,
