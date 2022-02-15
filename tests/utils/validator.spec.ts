@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { expect } from "chai";
 import validator from "../../src/utils/validator";
 import { AccountTypes, IAccount } from "../../src/types/accounts.interface";
@@ -11,11 +10,17 @@ describe("Validator Functions:", () => {
         });
 
         it("should return true if the object contains the provided keys", () => {
-            expect(validator.required({ name: "moshe", age: 32 }, ["name"])).to.be.true;
+            expect(validator.required({ name: "moshe", age: 32 }, ["name"])).to
+                .be.true;
         });
 
         it("should return false if the object doesn't contain the provided keys", () => {
-            expect(validator.required({ name: "moshe", age: 32 }, ["name", "email"])).to.be.false;
+            expect(
+                validator.required({ name: "moshe", age: 32 }, [
+                    "name",
+                    "email",
+                ])
+            ).to.be.false;
         });
     });
 
@@ -25,11 +30,21 @@ describe("Validator Functions:", () => {
         });
 
         it("should return true if the object doesn't contain the provided keys", () => {
-            expect(validator.notExist({ name: "moshe", age: 32 }, ["email", "password"])).to.be.true;
+            expect(
+                validator.notExist({ name: "moshe", age: 32 }, [
+                    "email",
+                    "password",
+                ])
+            ).to.be.true;
         });
 
         it("should return false if the object contains some of the provided keys", () => {
-            expect(validator.notExist({ name: "moshe", age: 32 }, ["name", "email"])).to.be.false;
+            expect(
+                validator.notExist({ name: "moshe", age: 32 }, [
+                    "name",
+                    "email",
+                ])
+            ).to.be.false;
         });
     });
 
@@ -43,15 +58,15 @@ describe("Validator Functions:", () => {
             currency: "USD",
             balance: 10000,
             status: 1,
-            type: AccountTypes.Individual
-        }
+            type: AccountTypes.Individual,
+        };
         const account2: IAccount = {
             account_id: 2,
             currency: "ILS",
             balance: 200000,
             status: 1,
-            type: AccountTypes.Business
-        }
+            type: AccountTypes.Business,
+        };
         let account3: any;
 
         it("should return true if all accounts in the array exist", () => {
@@ -59,7 +74,8 @@ describe("Validator Functions:", () => {
         });
 
         it("should return false if some of the accounts in the array doesn't exist", () => {
-            expect(validator.isExist([account1, account2, account3])).to.be.false;
+            expect(validator.isExist([account1, account2, account3])).to.be
+                .false;
         });
     });
 

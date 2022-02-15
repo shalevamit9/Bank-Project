@@ -4,7 +4,7 @@ import {
     AccountStatuses,
 } from "../types/accounts.interface.js";
 
-class AccountValidator {
+class AccountValidatorUtil {
     isActive(accounts: IAccount[]) {
         const result = accounts.every(
             (account) => account.status === AccountStatuses.Active
@@ -12,7 +12,7 @@ class AccountValidator {
         return result;
     }
 
-    isTypeOf(types: AccountTypes[], accounts: Partial<IAccount>[]) {
+    isTypeOf(types: AccountTypes[], accounts: IAccount[]) {
         const result = accounts.every((account) =>
             types.some((type) => type === account.type)
         );
@@ -27,6 +27,6 @@ class AccountValidator {
     }
 }
 
-const accountValidator = new AccountValidator();
+const accountValidatorUtil = new AccountValidatorUtil();
 
-export default accountValidator;
+export default accountValidatorUtil;

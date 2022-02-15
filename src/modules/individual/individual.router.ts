@@ -18,6 +18,12 @@ class IndividualRouter {
             raw(individualValidator.createIndividual),
             raw(individualController.createIndividualAccount)
         );
+ 
+        this.router.post(
+            "/transfer/:source_id/family/:destination_id",
+            raw(individualValidator.transferToFamily),
+            raw(individualController.transferToFamily)
+        );
     }
 }
 

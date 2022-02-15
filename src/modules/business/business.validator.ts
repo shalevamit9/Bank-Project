@@ -1,14 +1,17 @@
 import { Request, Response, RequestHandler, NextFunction } from "express";
 import validator from "../../utils/validator.js";
-import accountValidator from "../../utils/account.validator.js";
+import accountValidatorUtil from "../../utils/account.validation.utils.js";
 import { IBusinessAccount } from "./business.interface.js";
 import businessRepository from "./business.repository.js";
 import { AccountTypes } from "../../types/accounts.interface.js";
 import { IValidationResult } from "../../types/validation.interface.js";
 import { validationResultsHandler } from "../../utils/validation.utils.js";
 import individualRepository from "../individual/individual.repository.js";
+import config from "../../config/config.js";
 
 class BusinessValidator {
+    business_minimum_allowed_balance : number = config.BUSINESS_MINIMUM_ALLOWED_BALANCE;
+
     createBusiness: RequestHandler = (
         req: Request,
         res: Response,
@@ -79,18 +82,18 @@ class BusinessValidator {
         });
         const [source_account, destination_account] = accounts;
         results.push({
-            is_valid: accountValidator.isActive(accounts),
+            is_valid: accountValidatorUtil.isActive(accounts),
             message: "At least one account is not active",
         });
         results.push({
-            is_valid: accountValidator.isTypeOf(
+            is_valid: accountValidatorUtil.isTypeOf(
                 [AccountTypes.Business],
                 accounts
             ),
             message: "Both accounts have to be of type business",
         });
         results.push({
-            is_valid: accountValidator.isSameCurrency(source_account.currency, [
+            is_valid: accountValidatorUtil.isSameCurrency(source_account.currency, [
                 destination_account,
             ]),
             message: "Both accounts need to have the same currency",
@@ -107,7 +110,7 @@ class BusinessValidator {
             message: "amount is not positive",
         });
         results.push({
-            is_valid: validator.hasMinimalRemainingBalance(10000, [
+            is_valid: validator.hasMinimalRemainingBalance(this.business_minimum_allowed_balance, [
                 [source_account.balance, amount],
             ]),
             message: "source account doesn't have enough remaining balance",
@@ -136,11 +139,11 @@ class BusinessValidator {
         });
         const [source_account, destination_account] = accounts;
         results.push({
-            is_valid: accountValidator.isActive(accounts),
+            is_valid: accountValidatorUtil.isActive(accounts),
             message: "At least one account is not active",
         });
         results.push({
-            is_valid: accountValidator.isTypeOf(
+            is_valid: accountValidatorUtil.isTypeOf(
                 [AccountTypes.Business, AccountTypes.Individual],
                 accounts
             ),
@@ -148,7 +151,7 @@ class BusinessValidator {
                 "source can only be business account and destination can only be individual account",
         });
         results.push({
-            is_valid: accountValidator.isSameCurrency(source_account.currency, [
+            is_valid: accountValidatorUtil.isSameCurrency(source_account.currency, [
                 destination_account,
             ]),
             message: "Both accounts need to have the same currency",
@@ -165,7 +168,7 @@ class BusinessValidator {
             message: "amount is not positive",
         });
         results.push({
-            is_valid: validator.hasMinimalRemainingBalance(10000, [
+            is_valid: validator.hasMinimalRemainingBalance(this.business_minimum_allowed_balance, [
                 [source_account.balance, amount],
             ]),
             message: "source account doesn't have enough remaining balance",
@@ -194,11 +197,11 @@ class BusinessValidator {
         });
         const [source_account] = accounts;
         results.push({
-            is_valid: accountValidator.isActive(accounts),
+            is_valid: accountValidatorUtil.isActive(accounts),
             message: "At least one account is not active",
         });
         results.push({
-            is_valid: accountValidator.isTypeOf(
+            is_valid: accountValidatorUtil.isTypeOf(
                 [AccountTypes.Business],
                 accounts
             ),
@@ -216,7 +219,7 @@ class BusinessValidator {
             message: "amount is not positive",
         });
         results.push({
-            is_valid: validator.hasMinimalRemainingBalance(10000, [
+            is_valid: validator.hasMinimalRemainingBalance(this.business_minimum_allowed_balance, [
                 [source_account.balance, amount],
             ]),
             message: "source account doesn't have enough remaining balance",

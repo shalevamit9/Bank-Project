@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import sinon from "sinon";
+// import sinon from "sinon";
 import familyValidator from "../../src/modules/family/family.validator";
 
 // ================================
@@ -22,7 +22,7 @@ import familyValidator from "../../src/modules/family/family.validator";
 
 /*
  * !!! in each describe - write: !!!
- *          after(sinon.restire);
+ *          after(sinon.restore);
  * 
  */
 // ================================

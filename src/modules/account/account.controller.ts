@@ -17,7 +17,6 @@ class AccountController {
             message: "success",
             data: { result },
         };
-
         res.status(response.status).json(response);
     };
 }

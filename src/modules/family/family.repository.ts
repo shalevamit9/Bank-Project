@@ -1,4 +1,5 @@
 import { RowDataPacket, ResultSetHeader } from "mysql2";
+import config from "../../config/config.js";
 import { db } from "../../db/mysql.connection.js";
 import { TransferTuple } from "../../types/accounts.interface.js";
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
@@ -8,6 +9,7 @@ import {
     IIndividualAccountDto,
 } from "../individual/individual.interface.js";
 
+const { FAMILY_MINIMUM_ALLOWED_BALANCE } = config;
 class FamilyRepository {
     async getFamilyById(family_id: number) {
         const get_family = `SELECT * 
@@ -153,7 +155,7 @@ class FamilyRepository {
             if (
                 current_balance - amount_to_remove < 0 ||
                 (owners_left_after_removal > 0 &&
-                    current_balance - amount_to_remove < 5000) // define constant
+                    current_balance - amount_to_remove < FAMILY_MINIMUM_ALLOWED_BALANCE)
             ) {
                 throw new BadRequest(
                     "can't remove family members! remaining balance is invalid."

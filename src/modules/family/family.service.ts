@@ -4,6 +4,7 @@ import accountService from "../account/account.service.js";
 import businessRepository from "../business/business.repository.js";
 import individualService from "../individual/individual.service.js";
 import { ICreateFamily } from "./family.interface.js";
+import config from "../../config/config.js";
 import familyRepository from "./family.repository.js";
 import {
     IIndividualAccount,
@@ -15,6 +16,7 @@ import {
     TransferTuple,
 } from "../../types/accounts.interface.js";
 
+const { FAMILY_MAX_TRANSFER_LIMIT } = config;
 class FamilyService {
     async createFamilyAccount(family_data: ICreateFamily) {
         const { currency } = family_data;
@@ -71,9 +73,9 @@ class FamilyService {
         accounts_to_add: TransferTuple[],
         details_level = "full"
     ) {
-        const amount_to_add = accounts_to_add
-            .map((account) => account[1])
-            .reduce((total_amount, amount) => amount + total_amount, 0);
+        const amount_to_add = accounts_to_add.reduce((total, account) => {
+            return total + account[1];
+        }, 0);
 
         await familyRepository.addMembersToFamily(
             family_id,
@@ -94,9 +96,9 @@ class FamilyService {
         accounts_to_remove: TransferTuple[],
         details_level = "full"
     ) {
-        const amount_to_remove = accounts_to_remove
-            .map((account) => account[1])
-            .reduce((total_amount, amount) => amount + total_amount, 0);
+        const amount_to_remove = accounts_to_remove.reduce((total, account) => {
+            return total + account[1];
+        }, 0);
 
         await familyRepository.removeMembersFromFamily(
             family_id,
@@ -136,14 +138,14 @@ class FamilyService {
         destination_id: number,
         transfer_amount: number
     ) {
+
+        if (transfer_amount > FAMILY_MAX_TRANSFER_LIMIT) {
+            throw new BadRequest("Cannot perform transfer - Invalid amount");
+        }
         const source_account = await familyRepository.getFamilyById(source_id);
         const destination_account = await businessRepository.getBusinessById(
             destination_id
         );
-
-        if (transfer_amount > 5000) {  // define constants
-            throw new BadRequest("Cannot perform transfer - Invalid amount");
-        }
 
         const transfer_result = await accountService.transfer(
             source_account,
