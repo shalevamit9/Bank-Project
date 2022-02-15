@@ -32,23 +32,6 @@ config_watcher.on("change", async () => {
         await fsp.readFile(config_file_path, "utf-8")
     );
 
-    config.ACCESS_TOKEN_EXPIRATION = updated_config.ACCESS_TOKEN_EXPIRATION;
-    config.APP_SECRET = updated_config.APP_SECRET;
-    config.BUSINESS_MINIMUM_ALLOWED_BALANCE =
-        updated_config.BUSINESS_MINIMUM_ALLOWED_BALANCE;
-    config.DB_HOST = updated_config.DB_HOST;
-    config.DB_NAME = updated_config.DB_NAME;
-    config.DB_PASSWORD = updated_config.DB_PASSWORD;
-    config.DB_PORT = updated_config.DB_PORT;
-    config.DB_USERNAME = updated_config.DB_USERNAME;
-    config.FAMILY_MINIMUM_ALLOWED_BALANCE =
-        updated_config.FAMILY_MINIMUM_ALLOWED_BALANCE;
-    config.HOST = updated_config.HOST;
-    config.INDIVIDUAL_MINIMUM_ALLOWED_BALANCE =
-        updated_config.INDIVIDUAL_MINIMUM_ALLOWED_BALANCE;
-    config.NODE_ENV = updated_config.NODE_ENV;
-    config.PORT = updated_config.PORT;
-    config.REFRESH_TOKEN_EXPIRATION = updated_config.REFRESH_TOKEN_EXPIRATION;
     config.TRANSFER_AMOUNT_LIMITATION_FEATURE_FLAG =
         updated_config.TRANSFER_AMOUNT_LIMITATION_FEATURE_FLAG;
 });
