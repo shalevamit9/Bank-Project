@@ -5,11 +5,11 @@ import {
     IIndividualAccount,
 } from "./individual.interface.js";
 import { IAccountFormatter } from "../../types/formatter.interface.js";
-import { IAddress } from "../../types/accounts.interface.js";
+import { IAddress } from "../address/address.interface.js";
 import addressService from "../address/address.service.js";
 import accountService from "../account/account.service.js";
-import { AccountTypes } from "../../types/accounts.interface.js";
 import familyRepository from "../family/family.repository.js";
+import { AccountTypes } from "../account/account.interface.js";
 
 class IndividualService
     implements IAccountFormatter<IIndividualAccount, IIndividualAccountDto>

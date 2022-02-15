@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { expect } from "chai";
 import sinon from "sinon";
 import accountRepository from "../../src/modules/account/account.repository.js";

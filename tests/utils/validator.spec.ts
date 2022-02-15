@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { expect } from "chai";
 import validator from "../../src/utils/validator";
-import { AccountTypes, IAccount } from "../../src/types/accounts.interface";
+import {
+    AccountTypes,
+    IAccount,
+} from "../../src/modules/account/account.interface.js";
 
 describe("Validator Functions:", () => {
     context("required", () => {

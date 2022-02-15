@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
 import { ICreateAccount } from "../account/account.interface.js";
 import accountService from "../account/account.service.js";
@@ -11,10 +13,10 @@ import {
     IIndividualAccountDto,
 } from "../individual/individual.interface.js";
 import {
-    AccountStatuses,
-    AccountTypes,
     TransferTuple,
 } from "../../types/accounts.interface.js";
+import { AccountStatuses,
+    AccountTypes, } from "../account/account.interface.js";
 
 const { FAMILY_MAX_TRANSFER_LIMIT } = config;
 class FamilyService {

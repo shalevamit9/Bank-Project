@@ -25,7 +25,6 @@ class IndividualValidator {
             "last_name",
             "currency",
         ];
-
         results.push({
             is_valid: validator.required(individual_dto, mandatory_keys),
             message: `At least one of the following properties are missing [${mandatory_keys.toString()}]`,
@@ -54,7 +53,6 @@ class IndividualValidator {
             ),
             message: "individual_id is not greater than 1000000",
         });
-
         validationResultsHandler(results);
 
         next();

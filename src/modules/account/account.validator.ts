@@ -6,10 +6,7 @@ import { IUpdateAccount } from "./account.interface.js";
 import businessRepository from "../business/business.repository.js";
 import individualRepository from "../individual/individual.repository.js";
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
-import {
-    AccountStatuses,
-    AccountTypes,
-} from "../../types/accounts.interface.js";
+import { AccountStatuses, AccountTypes } from "./account.interface.js";
 
 class AccountValidator {
     changeAccountsStatus: RequestHandler = async (req, res, next) => {
@@ -20,14 +17,6 @@ class AccountValidator {
             action === "activate"
                 ? AccountStatuses.Inactive
                 : AccountStatuses.Active;
-
-        // const individual_accounts_ids: number[] = accounts_ids
-        //     .filter((account) => account[1] === AccountTypes.Individual)
-        //     .map((account) => account[0]);
-
-        // const business_accounts_ids: number[] = accounts_ids
-        //     .filter((account) => account[1] === AccountTypes.Business)
-        //     .map((account) => account[0]);
 
         const individual_accounts_ids = accounts_ids.reduce(
             (acc, account_tuple) => {
@@ -65,7 +54,9 @@ class AccountValidator {
             message: "accounts list should not be empty",
         });
         results.push({
-            is_valid: accounts_ids.every((account) => validator.isNumeric(account[0])),
+            is_valid: accounts_ids.every((account) =>
+                validator.isNumeric(account[0])
+            ),
             message: "the provided accounts IDs should be numeric",
         });
         results.push({
