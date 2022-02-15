@@ -11,15 +11,15 @@ import accountService, {
 } from "../../src/modules/account/account.service.js";
 import businessRepository from "../../src/modules/business/business.repository.js";
 import addressService from "../../src/modules/address/address.service.js";
+import individualRepository from "../../src/modules/individual/individual.repository.js";
+import { IIndividualAccount } from "../../src/modules/individual/individual.interface.js";
+import exchange_rate_utils from "../../src/utils/exchange.rate.js";
+import { IAddress } from "../../src/modules/address/address.interface.js";
 import {
     AccountStatuses,
     AccountTypes,
     IAccount,
-    IAddress,
-} from "../../src/types/accounts.interface.js";
-import individualRepository from "../../src/modules/individual/individual.repository.js";
-import { IIndividualAccount } from "../../src/modules/individual/individual.interface.js";
-import exchange_rate_utils from "../../src/utils/exchange.rate.js";
+} from "../../src/modules/account/account.interface.js";
 
 describe("Business Service module", () => {
     const address: IAddress = {

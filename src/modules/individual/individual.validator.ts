@@ -5,10 +5,10 @@ import { validationResultsHandler } from "../../utils/validation.utils.js";
 import { IValidationResult } from "../../types/validation.interface.js";
 import config from "../../config/config.js";
 import individualService from "./individual.service.js";
-import { AccountTypes, IAccount } from "../../types/accounts.interface.js";
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
 import accountValidatorUtil from "../../utils/account.validation.utils.js";
 import familyService from "../family/family.service.js";
+import { AccountTypes, IAccount } from "../account/account.interface.js";
 
 const { INDIVIDUAL_MINIMUM_ALLOWED_BALANCE } = config;
 class IndividualValidator {
@@ -91,10 +91,7 @@ class IndividualValidator {
 
         const owners = destination_account.owners as IIndividualAccountDto[];
 
-        const accounts = [
-            source_account,
-            destination_account,
-        ] as IAccount[];
+        const accounts = [source_account, destination_account] as IAccount[];
 
         if (!validator.isExist(accounts)) {
             throw new BadRequest(
@@ -145,8 +142,7 @@ class IndividualValidator {
                 source_account?.currency as string,
                 [destination_account]
             ),
-            message:
-                "the accounts don't have the same currency",
+            message: "the accounts don't have the same currency",
         });
         results.push({
             is_valid: validator.hasMinimalRemainingBalance(

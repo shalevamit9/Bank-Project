@@ -3,55 +3,32 @@ import { Request, Response } from "express";
 import { expect } from "chai";
 import sinon from "sinon";
 import familyValidator from "../../src/modules/family/family.validator";
-import { ICreateFamily, IFamilyAccountDto } from "../../src/modules/family/family.interface.js";
+import {
+    ICreateFamily,
+    IFamilyAccountDto,
+} from "../../src/modules/family/family.interface.js";
 import { IIndividualAccount } from "../../src/modules/individual/individual.interface.js";
 import { AccountTypes } from "../../src/modules/account/account.interface.js";
 import individualRepository from "../../src/modules/individual/individual.repository.js";
 import businessRepository from "../../src/modules/business/business.repository.js";
 import validator from "../../src/utils/validator.js";
-import accountValidator from "../../src/utils/account.validator.js";
+import accountValidator from "../../src/utils/account.validation.utils.js";
 import * as validation_utils from "../../src/utils/validation.utils.js";
 import family_service from "../../src/modules/family/family.service.js";
-const validationResultHandler = {...validation_utils};
-
-// ================================
-//      YARIV'S EXAMPLES
-// ================================
-
-// const myObject = {
-//     someMethod: () => "some output value",
-// };
-
-// sinon.replace(myObject, "someMethod", sinon.fake.returns("fake value"));
-
-// const fake = sinon.fake.throws(new Error("not enough sugar"));
-
-// // 2 options for the same thing
-// expect(fake).to.throw("not enough sugar");
-// expect(() => fake()).to.throw("not enough sugar");
-
-// !!! in each describe - write:
-
-/*
- * !!! in each describe - write: !!!
- *          after(sinon.restore);
- * 
- */
-// ================================
-// ================================
-
+const validationResultHandler = { ...validation_utils };
 
 describe("Family Validator Functions:", () => {
-
-    before(() => {sinon.restore()});
-    afterEach(() => {sinon.restore()});
+    before(() => {
+        sinon.restore();
+    });
+    afterEach(() => {
+        sinon.restore();
+    });
 
     const create_valid_account1: ICreateFamily = {
         currency: "USD",
         context: "travel",
-        owners: [
-            [3, 3000],
-        ],
+        owners: [[3, 3000]],
     };
 
     const owners: IIndividualAccount[] = [
@@ -154,7 +131,6 @@ describe("Family Validator Functions:", () => {
     };
 
     context("#createFamily()", () => {
-  
         it("should be a function", () => {
             expect(familyValidator.createFamily).to.be.a("function");
         });
@@ -162,9 +138,11 @@ describe("Family Validator Functions:", () => {
         it("create family validation middleware", async () => {
             sinon.stub(validator, "required").returns(true);
             sinon.stub(validator, "notExist").returns(true);
-            
+
             const owner = owners[0];
-            sinon.stub(individualRepository, "getIndividualById").resolves(owner);
+            sinon
+                .stub(individualRepository, "getIndividualById")
+                .resolves(owner);
 
             sinon.stub(validator, "isExist").returns(true);
             sinon.stub(accountValidator, "isActive").returns(true);
@@ -172,23 +150,24 @@ describe("Family Validator Functions:", () => {
             sinon.stub(accountValidator, "isSameCurrency").returns(true);
             sinon.stub(validator, "hasMinSum").returns(true);
             sinon.stub(validator, "isGreaterThan").returns(true);
-    
-            sinon.stub(validator, "hasMinimalRemainingBalance").returns(true);
-            sinon.stub(validationResultHandler, "validationResultsHandler").callsFake(() => 1);
 
-            const req  = {} as Request;
+            sinon.stub(validator, "hasMinimalRemainingBalance").returns(true);
+            sinon
+                .stub(validationResultHandler, "validationResultsHandler")
+                .callsFake(() => 1);
+
+            const req = {} as Request;
             req.body = create_valid_account1;
-            const res  = {} as Response;
-            const next = ()=>1;
+            const res = {} as Response;
+            const next = () => 1;
             const next_spy = sinon.spy(next);
 
-            await familyValidator.createFamily(req,res,next_spy); 
+            await familyValidator.createFamily(req, res, next_spy);
             expect(next_spy.calledOnce).to.be.equal(true);
         });
     });
 
     context("#getFamily()", () => {
-  
         it("should be a function", () => {
             expect(familyValidator.getFamily).to.be.a("function");
         });
@@ -196,21 +175,22 @@ describe("Family Validator Functions:", () => {
         it("get family validation middleware", () => {
             sinon.stub(validator, "required").returns(true);
             sinon.stub(validator, "isNumeric").returns(true);
-            sinon.stub(validationResultHandler, "validationResultsHandler").callsFake(() => 1);
-            
-            const req  = {} as Request;
-            req.params = {id:"1"};
-            const res  = {} as Response;
-            const next = ()=>1;
-            const next_spy = sinon.spy(next)
+            sinon
+                .stub(validationResultHandler, "validationResultsHandler")
+                .callsFake(() => 1);
 
-            familyValidator.getFamily(req,res,next_spy);
+            const req = {} as Request;
+            req.params = { id: "1" };
+            const res = {} as Response;
+            const next = () => 1;
+            const next_spy = sinon.spy(next);
+
+            familyValidator.getFamily(req, res, next_spy);
             expect(next_spy.calledOnce).to.be.equal(true);
         });
     });
 
     context("#addFamilyMembers()", () => {
-  
         it("should be a function", () => {
             expect(familyValidator.addFamilyMembers).to.be.a("function");
         });
@@ -223,24 +203,25 @@ describe("Family Validator Functions:", () => {
             sinon.stub(accountValidator, "isSameCurrency").returns(true);
             sinon.stub(accountValidator, "isTypeOf").returns(true);
             sinon.stub(accountValidator, "isActive").returns(true);
-            sinon.stub(validationResultHandler, "validationResultsHandler").callsFake(() => 1);
-            
-            const tT = [1,5000];
-            const tTArray = [tT];
-            const req  = {} as Request;
-            req.params = {id:"1"};
-            req.body = {individual_accounts: tTArray};
-            const res  = {} as Response;
-            const next = ()=>1;
-            const next_spy = sinon.spy(next)
+            sinon
+                .stub(validationResultHandler, "validationResultsHandler")
+                .callsFake(() => 1);
 
-            await familyValidator.addFamilyMembers(req,res,next_spy);
+            const tT = [1, 5000];
+            const tTArray = [tT];
+            const req = {} as Request;
+            req.params = { id: "1" };
+            req.body = { individual_accounts: tTArray };
+            const res = {} as Response;
+            const next = () => 1;
+            const next_spy = sinon.spy(next);
+
+            await familyValidator.addFamilyMembers(req, res, next_spy);
             expect(next_spy.calledOnce).to.be.equal(true);
         });
     });
 
     context("validate removeFamilyMembers", () => {
-  
         it("should be a function", () => {
             expect(familyValidator.removeFamilyMembers).to.be.a("function");
         });
@@ -249,21 +230,22 @@ describe("Family Validator Functions:", () => {
             sinon.stub(family_service, "getFamilyById").resolves(full_family);
             sinon.stub(validator, "isNumeric").returns(true);
             sinon.stub(validator, "isPositive").returns(true);
-            sinon.stub(validationResultHandler, "validationResultsHandler").callsFake(() => 1);
-            
-            const req  = {} as Request;
-            req.params = {id:"1"};
-            const res  = {} as Response;
-            const next = ()=>1;
-            const next_spy = sinon.spy(next)
+            sinon
+                .stub(validationResultHandler, "validationResultsHandler")
+                .callsFake(() => 1);
 
-            familyValidator.closeFamilyAccount(req,res,next_spy);
+            const req = {} as Request;
+            req.params = { id: "1" };
+            const res = {} as Response;
+            const next = () => 1;
+            const next_spy = sinon.spy(next);
+
+            familyValidator.closeFamilyAccount(req, res, next_spy);
             expect(next_spy.calledOnce).to.be.equal(true);
         });
     });
-    
+
     context("validate closeFamilyAccount", () => {
-  
         it("should be a function", () => {
             expect(familyValidator.closeFamilyAccount).to.be.a("function");
         });
@@ -271,48 +253,51 @@ describe("Family Validator Functions:", () => {
         it("close family validation middleware", () => {
             sinon.stub(validator, "required").returns(true);
             sinon.stub(validator, "isNumeric").returns(true);
-            sinon.stub(validationResultHandler, "validationResultsHandler").callsFake(() => 1);
-            
-            const req  = {} as Request;
-            req.params = {id:"1"};
-            const res  = {} as Response;
-            const next = ()=>1;
-            const next_spy = sinon.spy(next)
+            sinon
+                .stub(validationResultHandler, "validationResultsHandler")
+                .callsFake(() => 1);
 
-            familyValidator.closeFamilyAccount(req,res,next_spy);
+            const req = {} as Request;
+            req.params = { id: "1" };
+            const res = {} as Response;
+            const next = () => 1;
+            const next_spy = sinon.spy(next);
+
+            familyValidator.closeFamilyAccount(req, res, next_spy);
             expect(next_spy.calledOnce).to.be.equal(true);
         });
     });
 
     context("validate transferToBusiness", () => {
-
         const business_account = {
-            "business_account_id": 1,
-            "company_id": 20334011,
-            "account_id": 1,
-            "company_name": "nespresso",
-            "currency": "nis",
-            "balance": 6000,
-            "type": AccountTypes.Individual,
-            "context":"vication",
-            "status": 1,
-            "address_id": 1,
-            "country_name": "Israel",
-            "country_code": "IL",
-            "postal_code": 6606,
-            "city": "Tel Aviv",
-            "region": "Center",
-            "street_name": "Menachem Begin",
-            "street_number": 45
+            business_account_id: 1,
+            company_id: 20334011,
+            account_id: 1,
+            company_name: "nespresso",
+            currency: "nis",
+            balance: 6000,
+            type: AccountTypes.Individual,
+            context: "vication",
+            status: 1,
+            address_id: 1,
+            country_name: "Israel",
+            country_code: "IL",
+            postal_code: 6606,
+            city: "Tel Aviv",
+            region: "Center",
+            street_name: "Menachem Begin",
+            street_number: 45,
         };
-  
+
         it("should be a function", () => {
             expect(familyValidator.transferToBusiness).to.be.a("function");
         });
 
         it("transfer to business validation middleware", async () => {
             sinon.stub(family_service, "getFamilyById").resolves(full_family);
-            sinon.stub(businessRepository, "getBusinessById").resolves(business_account);
+            sinon
+                .stub(businessRepository, "getBusinessById")
+                .resolves(business_account);
             sinon.stub(validator, "isExist").returns(true);
             sinon.stub(accountValidator, "isActive").returns(true);
             sinon.stub(accountValidator, "isTypeOf").returns(true);
@@ -321,19 +306,19 @@ describe("Family Validator Functions:", () => {
             sinon.stub(accountValidator, "isSameCurrency").returns(true);
             sinon.stub(validator, "hasMinimalRemainingBalance").returns(true);
             sinon.stub(validator, "isLessThan").returns(true);
-            sinon.stub(validationResultHandler, "validationResultsHandler").callsFake(() => 1);
+            sinon
+                .stub(validationResultHandler, "validationResultsHandler")
+                .callsFake(() => 1);
 
-            const req  = {} as Request;
-            req.params = {source_id:"1",destination_id:"2"};
-            req.body = {amount:1};
-            const res  = {} as Response;
-            const next = ()=>1;
-            const next_spy = sinon.spy(next)
+            const req = {} as Request;
+            req.params = { source_id: "1", destination_id: "2" };
+            req.body = { amount: 1 };
+            const res = {} as Response;
+            const next = () => 1;
+            const next_spy = sinon.spy(next);
 
-            await familyValidator.transferToBusiness(req,res,next_spy);
+            await familyValidator.transferToBusiness(req, res, next_spy);
             expect(next_spy.calledOnce).to.be.equal(true);
         });
     });
-
 });
-

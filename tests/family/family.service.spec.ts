@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { expect } from "chai";
 import sinon from "sinon";
+import {
+    AccountTypes,
+    IAccount,
+} from "../../src/modules/account/account.interface.js";
 import accountRepository from "../../src/modules/account/account.repository.js";
 import accountService, {
     ITransaction,
@@ -17,7 +21,6 @@ import {
     IIndividualAccountDto,
 } from "../../src/modules/individual/individual.interface.js";
 import individualService from "../../src/modules/individual/individual.service.js";
-import { AccountTypes, IAccount } from "../../src/types/accounts.interface.js";
 
 describe("Family Service Functions:", () => {
     const full_family: IFamilyAccountDto = {

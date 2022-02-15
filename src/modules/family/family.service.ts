@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { BadRequest } from "../../exceptions/badRequest.exception.js";
 import { ICreateAccount } from "../account/account.interface.js";
 import accountService from "../account/account.service.js";
@@ -12,11 +10,8 @@ import {
     IIndividualAccount,
     IIndividualAccountDto,
 } from "../individual/individual.interface.js";
-import {
-    TransferTuple,
-} from "../../types/accounts.interface.js";
-import { AccountStatuses,
-    AccountTypes, } from "../account/account.interface.js";
+import { TransferTuple } from "../../types/accounts.interface.js";
+import { AccountStatuses, AccountTypes } from "../account/account.interface.js";
 
 const { FAMILY_MAX_TRANSFER_LIMIT } = config;
 class FamilyService {
@@ -140,9 +135,12 @@ class FamilyService {
         destination_id: number,
         transfer_amount: number
     ) {
-
-        if (transfer_amount > FAMILY_MAX_TRANSFER_LIMIT) {
-            throw new BadRequest("Cannot perform transfer - Invalid amount");
+        const isValidTransfer = transfer_amount <= FAMILY_MAX_TRANSFER_LIMIT;
+        if (
+            config.TRANSFER_AMOUNT_LIMITATION_FEATURE_FLAG &&
+            !isValidTransfer
+        ) {
+            throw new BadRequest("Passed Transfer Limit");
         }
         const source_account = await familyRepository.getFamilyById(source_id);
         const destination_account = await businessRepository.getBusinessById(
