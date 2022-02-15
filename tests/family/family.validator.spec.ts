@@ -194,31 +194,6 @@ describe("Family Validator Functions:", () => {
         it("should be a function", () => {
             expect(familyValidator.addFamilyMembers).to.be.a("function");
         });
-
-        it("add family members validation middleware", async () => {
-            sinon.stub(validator, "required").returns(true);
-            sinon.stub(validator, "isNumeric").returns(true);
-            sinon.stub(validator, "isPositive").returns(true);
-            sinon.stub(family_service, "getFamilyById").resolves(full_family);
-            sinon.stub(accountValidator, "isSameCurrency").returns(true);
-            sinon.stub(accountValidator, "isTypeOf").returns(true);
-            sinon.stub(accountValidator, "isActive").returns(true);
-            sinon
-                .stub(validationResultHandler, "validationResultsHandler")
-                .callsFake(() => 1);
-
-            const tT = [1, 5000];
-            const tTArray = [tT];
-            const req = {} as Request;
-            req.params = { id: "1" };
-            req.body = { individual_accounts: tTArray };
-            const res = {} as Response;
-            const next = () => 1;
-            const next_spy = sinon.spy(next);
-
-            await familyValidator.addFamilyMembers(req, res, next_spy);
-            expect(next_spy.calledOnce).to.be.equal(true);
-        });
     });
 
     context("validate removeFamilyMembers", () => {

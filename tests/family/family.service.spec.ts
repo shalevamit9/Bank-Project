@@ -448,7 +448,7 @@ describe("Family Service Functions:", () => {
                 await familyService.transferToBusiness(22, 4, 6500);
             } catch (error) {
                 expect((error as Error).message).to.equal(
-                    "Bad Request - Cannot perform transfer - Invalid amount"
+                    "Bad Request - Passed Transfer Limit"
                 );
             }
         });
